@@ -7,3 +7,9 @@
 127.0.0.1 - - [17/Mar/2026 04:38:10] "GET /data.json HTTP/1.1" 200 -
 127.0.0.1 - - [17/Mar/2026 04:38:11] "GET /template_gallery.json HTTP/1.1" 200 -
 127.0.0.1 - - [17/Mar/2026 04:38:13] "GET /template_solar.json HTTP/1.1" 200 -
+127.0.0.1 - - [17/Mar/2026 04:43:26] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [17/Mar/2026 04:43:26] "GET /engine.js HTTP/1.1" 200 -
+127.0.0.1 - - [17/Mar/2026 04:43:26] "GET /data.json HTTP/1.1" 200 -
+127.0.0.1 - - [17/Mar/2026 04:43:28] "GET /template_city.json HTTP/1.1" 200 -
+127.0.0.1 - - [17/Mar/2026 04:43:30] "GET /template_carousel.json HTTP/1.1" 200 -
+127.0.0.1 - - [17/Mar/2026 04:43:32] "GET /template_tunnel.json HTTP/1.1" 200 -
