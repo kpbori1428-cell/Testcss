@@ -2,53 +2,169 @@ import { fusionar } from '../core/DeepMerge.js';
 import { ticker } from '../core/Ticker.js';
 import { inputManager } from '../events/InputManager.js';
 import { FormulaParser } from '../math/FormulaParser.js';
+import { BehaviorManager } from '../core/BehaviorManager.js';
+
 export class RenderNode {
-    constructor(d, pe, dp, f) {
-        this.data = d; this.parentElement = pe; this.depth = dp; this.factory = f;
+    constructor(data, parentElement, depth, factory) {
+        this.data = data;
+        this.parentElement = parentElement;
+        this.depth = depth;
+        this.factory = factory;
+
         this.currentTransform = { translateX:0, translateY:0, translateZ:0, rotateX:0, rotateY:0, rotateZ:0, scale:1 };
         this.targetTransform = { ...this.currentTransform };
-        if (d.baseTransform) Object.assign(this.currentTransform, d.baseTransform), Object.assign(this.targetTransform, d.baseTransform);
-        this.formulaProps = new Map(); this.scanFormulas(); this.mount();
+        this.lastTransformString = "";
+        this.lastInnerHTML = "";
+        this.isAwake = false;
+        this.mounted = false;
+        this.formulaProps = new Map();
+
+        if (data.baseTransform) {
+            Object.assign(this.currentTransform, data.baseTransform);
+            Object.assign(this.targetTransform, data.baseTransform);
+        }
+
+        this.scanFormulas();
+        this.mount();
     }
+
+    reuse(data, parentElement, depth) {
+        this.unmount();
+        this.data = data;
+        this.parentElement = parentElement;
+        this.depth = depth;
+        this.formulaProps.clear();
+        this.lastTransformString = "";
+        this.lastInnerHTML = "";
+
+        Object.assign(this.currentTransform, { translateX:0, translateY:0, translateZ:0, rotateX:0, rotateY:0, rotateZ:0, scale:1 });
+        if (data.baseTransform) Object.assign(this.currentTransform, data.baseTransform);
+        Object.assign(this.targetTransform, this.currentTransform);
+
+        this.scanFormulas();
+        this.mount();
+    }
+
     scanFormulas() {
-        Object.entries(this.data.props).forEach(([k,v]) => FormulaParser.isFormula(v) && (this.formulaProps.set(`p:${k}`, v), this.wakeUp()));
-        const t = this.data.props.transform || this.data.baseTransform;
-        if (t) Object.entries(t).forEach(([k,v]) => FormulaParser.isFormula(v) && (this.formulaProps.set(`t:${k}`, v), this.wakeUp()));
-    }
-    mount() {
-        this.element = document.createElement('div'); this.element.id = this.data.id;
-        this.element.style.transformStyle = 'preserve-3d'; this.element.style.zIndex = this.depth;
-        this.currentTransform.translateZ += (this.depth * 0.001); this.targetTransform.translateZ += (this.depth * 0.001);
-        this.applyStyles(); this.parentElement.appendChild(this.element); this.mounted = true;
-        import('../core/BehaviorManager.js').then(({BehaviorManager}) => { this.bm = new BehaviorManager(this); this.bm.init(); });
-        this.applyTransform();
-    }
-    applyStyles() {
-        Object.entries(this.data.props).forEach(([k,v]) => {
-            if (k.startsWith('--')) this.element.style.setProperty(k, v);
-            else if (k === 'innerHTML') { if (!FormulaParser.isFormula(v)) this.element.innerHTML = v; }
-            else if (k !== 'transform' && !FormulaParser.isFormula(v)) this.element.style[k] = v;
+        Object.entries(this.data.props).forEach(([key, value]) => {
+            if (FormulaParser.isFormula(value)) {
+                this.formulaProps.set(`p:${key}`, value);
+                this.wakeUp();
+            }
         });
-    }
-    update(dt) {
-        if (!this.mounted || !this.isAwake) return false;
-        let req = false;
-        if (this.formulaProps.size) {
-            const p = inputManager.getState().pointer, vars = { time: ticker.elapsedTime, index: this.data.props['--instance-index']||0, total: this.data.props['--instance-total']||1, mouseX: p.normalX, mouseY: p.normalY };
-            this.formulaProps.forEach((f, k) => {
-                const v = FormulaParser.evaluate(f, vars);
-                if (k.startsWith('p:')) { const n = k.split(':')[1]; n === 'innerHTML' ? (this.element.innerHTML = v) : (this.element.style[n] = v); }
-                else { this.targetTransform[k.split(':')[1]] = v; if (!this.bm) this.currentTransform[k.split(':')[1]] = v; }
-                req = true;
+
+        const sourceTransform = this.data.props.transform || this.data.baseTransform;
+        if (sourceTransform) {
+            Object.entries(sourceTransform).forEach(([key, value]) => {
+                if (FormulaParser.isFormula(value)) {
+                    this.formulaProps.set(`t:${key}`, value);
+                    this.wakeUp();
+                }
             });
         }
-        if (this.bm && this.bm.update(dt)) req = true;
-        this.applyTransform(); return this.formulaProps.size > 0 || req;
     }
+
+    mount() {
+        if (!this.element) {
+            this.element = document.createElement('div');
+            this.element.style.transformStyle = 'preserve-3d';
+        }
+        this.element.id = this.data.id;
+        this.element.style.zIndex = this.depth;
+
+        // Z-fighting micro-compensation
+        this.currentTransform.translateZ += (this.depth * 0.001);
+        this.targetTransform.translateZ += (this.depth * 0.001);
+
+        this.applyStyles();
+        this.parentElement.appendChild(this.element);
+        this.mounted = true;
+
+        this.behaviorManager = new BehaviorManager(this);
+        this.behaviorManager.init();
+
+        this.applyTransform();
+    }
+
+    applyStyles() {
+        Object.entries(this.data.props).forEach(([key, value]) => {
+            if (key.startsWith('--')) {
+                this.element.style.setProperty(key, value);
+            } else if (key === 'innerHTML') {
+                if (!FormulaParser.isFormula(value)) this.updateInnerHTML(value);
+            } else if (key !== 'transform' && !FormulaParser.isFormula(value)) {
+                this.element.style[key] = value;
+            }
+        });
+    }
+
+    updateInnerHTML(html) {
+        if (this.lastInnerHTML !== html) {
+            this.element.innerHTML = html;
+            this.lastInnerHTML = html;
+        }
+    }
+
+    update(deltaTime) {
+        if (!this.mounted || !this.isAwake) return false;
+        let requiresUpdate = false;
+
+        if (this.formulaProps.size > 0) {
+            const pointer = inputManager.getState().pointer;
+            const vars = {
+                time: ticker.elapsedTime,
+                index: this.data.props['--instance-index'] || 0,
+                total: this.data.props['--instance-total'] || 1,
+                mouseX: pointer.normalX,
+                mouseY: pointer.normalY
+            };
+
+            this.formulaProps.forEach((formula, key) => {
+                const value = FormulaParser.evaluate(formula, vars);
+                if (key.startsWith('p:')) {
+                    const propName = key.split(':')[1];
+                    propName === 'innerHTML' ? this.updateInnerHTML(value) : (this.element.style[propName] = value);
+                } else {
+                    const transName = key.split(':')[1];
+                    this.targetTransform[transName] = value;
+                    if (!this.behaviorManager) this.currentTransform[transName] = value;
+                }
+                requiresUpdate = true;
+            });
+        }
+
+        if (this.behaviorManager && this.behaviorManager.update(deltaTime)) {
+            requiresUpdate = true;
+        }
+
+        this.applyTransform();
+        return this.formulaProps.size > 0 || requiresUpdate;
+    }
+
     applyTransform() {
         const t = this.currentTransform;
-        this.element.style.transform = `translate3d(${t.translateX}px, ${t.translateY}px, ${t.translateZ}px) rotateY(${t.rotateY}deg) rotateX(${t.rotateX}deg) rotateZ(${t.rotateZ}deg) scale(${t.scale})`;
+        const s = `translate3d(${t.translateX.toFixed(2)}px, ${t.translateY.toFixed(2)}px, ${t.translateZ.toFixed(3)}px) rotateY(${t.rotateY.toFixed(2)}deg) rotateX(${t.rotateX.toFixed(2)}deg) rotateZ(${t.rotateZ.toFixed(2)}deg) scale(${t.scale.toFixed(3)})`;
+
+        if (this.lastTransformString !== s) {
+            this.element.style.transform = s;
+            this.lastTransformString = s;
+        }
     }
-    wakeUp() { this.isAwake = true; ticker.addNode(this); }
-    unmount() { ticker.removeNode(this); if (this.bm) this.bm.dispose(); if (this.element?.parentElement) this.element.parentElement.removeChild(this.element); this.mounted = false; }
+
+    wakeUp() {
+        this.isAwake = true;
+        ticker.addNode(this);
+    }
+
+    unmount() {
+        ticker.removeNode(this);
+        if (this.behaviorManager) {
+            this.behaviorManager.dispose();
+            this.behaviorManager = null;
+        }
+        if (this.element && this.element.parentElement) {
+            this.element.parentElement.removeChild(this.element);
+        }
+        this.mounted = false;
+    }
 }
