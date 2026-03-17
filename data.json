@@ -1,0 +1,50 @@
+{
+    "id": "escena_principal",
+    "Propiedades_Esteticas": {
+        "width": "100%",
+        "height": "100%",
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center"
+    },
+    "Directivas_Logicas": {
+        "mouse-follow": "20"
+    },
+    "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+    "Hijos": [
+        {
+            "id": "cubo_central",
+            "Propiedades_Esteticas": {
+                "width": "200px",
+                "height": "200px",
+                "background": "linear-gradient(45deg, #ff00cc, #3333ff)",
+                "borderRadius": "20px",
+                "boxShadow": "0 20px 50px rgba(0,0,0,0.5)"
+            },
+            "Directivas_Logicas": {
+                "look-at-mouse": "45"
+            },
+            "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+            "Hijos": [
+                {
+                    "id": "decoracion",
+                    "Instancias": 4,
+                    "Propiedades_Esteticas": {
+                        "width": "50px",
+                        "height": "50px",
+                        "background": "white",
+                        "borderRadius": "50%",
+                        "position": "absolute",
+                        "top": "20px",
+                        "left": "20px",
+                        "opacity": "0.8"
+                    },
+                    "Directivas_Logicas": {
+                        "mouse-follow": "30"
+                    },
+                    "Transform_Base": { "x": 0, "y": 0, "z": 20, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                }
+            ]
+        }
+    ]
+}
