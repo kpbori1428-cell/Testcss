@@ -186,7 +186,66 @@
                                         }
                                     },
                                     "Directivas_Logicas": { "mouse-follow": "-5" },
-                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_ajustes", "Propiedades_Esteticas": {"content": "'⚙'", "color": "#ffffff", "fontSize": "24px", "margin": "10px"}}]
+                                },
+                                {
+                                    "id": "app_mapa",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
+                                    },
+                                    "Acciones": {
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono": {
+                                            "Propiedades_Esteticas": { "background": "#b2dfdb" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.rejilla_apps": {
+                                            "Propiedades_Esteticas": { "display": "none" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_mapa": {
+                                            "Propiedades_Esteticas": { "display": "flex" }
+                                        }
+                                    },
+                                    "Directivas_Logicas": { "mouse-follow": "-5" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_mapa", "Propiedades_Esteticas": {"content": "'📍'", "color": "#00695c", "fontSize": "24px", "margin": "10px"}}]
+                                },
+                                {
+                                    "id": "app_navegador",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
+                                    },
+                                    "Acciones": {
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono": {
+                                            "Propiedades_Esteticas": { "background": "#f5f5f5" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.rejilla_apps": {
+                                            "Propiedades_Esteticas": { "display": "none" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_navegador": {
+                                            "Propiedades_Esteticas": { "display": "flex" }
+                                        }
+                                    },
+                                    "Directivas_Logicas": { "mouse-follow": "-5" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_nav", "Propiedades_Esteticas": {"content": "'🌐'", "color": "#283593", "fontSize": "24px", "margin": "10px"}}]
                                 }
                             ]
                         },
@@ -268,6 +327,109 @@
                                         "border": "2px solid rgba(255,255,255,0.5)"
                                     },
                                     "Transform_Base": { "x": 0, "y": 0, "z": 2, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "app_view_mapa",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "flex": "1",
+                                "display": "none",
+                                "overflow": "hidden",
+                                "position": "relative"
+                            },
+                            "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                            "Hijos": [
+                                {
+                                    "id": "mapa_terreno",
+                                    "Propiedades_Esteticas": {
+                                        "width": "200%",
+                                        "height": "200%",
+                                        "background": "repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(255,255,255,0.2) 49px, rgba(255,255,255,0.2) 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(255,255,255,0.2) 49px, rgba(255,255,255,0.2) 50px)",
+                                        "backgroundColor": "#80cbc4",
+                                        "position": "absolute",
+                                        "left": "-50%",
+                                        "top": "-50%"
+                                    },
+                                    "Directivas_Logicas": { "mouse-follow": "20", "scroll": "yes" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 45, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [
+                                        {
+                                            "id": "marcador",
+                                            "Propiedades_Esteticas": {
+                                                "width": "20px",
+                                                "height": "20px",
+                                                "background": "#d32f2f",
+                                                "borderRadius": "50%",
+                                                "position": "absolute",
+                                                "left": "50%",
+                                                "top": "50%",
+                                                "border": "3px solid white"
+                                            },
+                                            "Transform_Base": { "x": 0, "y": 0, "z": 15, "rx": -45, "ry": 0, "rz": 0, "scale": 1 }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "app_view_navegador",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "flex": "1",
+                                "display": "none",
+                                "flexDirection": "column",
+                                "alignItems": "center",
+                                "paddingTop": "20px",
+                                "boxSizing": "border-box"
+                            },
+                            "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                            "Hijos": [
+                                {
+                                    "id": "barra_busqueda",
+                                    "Propiedades_Esteticas": {
+                                        "width": "90%",
+                                        "height": "40px",
+                                        "background": "white",
+                                        "borderRadius": "20px",
+                                        "marginBottom": "20px",
+                                        "boxShadow": "0 2px 5px rgba(0,0,0,0.2)",
+                                        "display": "flex",
+                                        "alignItems": "center",
+                                        "paddingLeft": "15px",
+                                        "boxSizing": "border-box"
+                                    },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                },
+                                {
+                                    "id": "tarjetas_contenedor",
+                                    "Propiedades_Esteticas": {
+                                        "width": "100%",
+                                        "flex": "1",
+                                        "display": "flex",
+                                        "flexDirection": "column",
+                                        "alignItems": "center",
+                                        "gap": "15px",
+                                        "paddingTop": "10px"
+                                    },
+                                    "Directivas_Logicas": { "scroll": "yes" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 2, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [
+                                        {
+                                            "id": "tarjeta",
+                                            "Instancias": 3,
+                                            "Propiedades_Esteticas": {
+                                                "width": "90%",
+                                                "height": "120px",
+                                                "background": "white",
+                                                "borderRadius": "15px",
+                                                "boxShadow": "0 4px 8px rgba(0,0,0,0.1)",
+                                                "border": "1px solid #e0e0e0"
+                                            },
+                                            "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -365,6 +527,12 @@
                                     "Propiedades_Esteticas": { "display": "none" }
                                 },
                                 "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_ajustes": {
+                                    "Propiedades_Esteticas": { "display": "none" }
+                                },
+                                "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_mapa": {
+                                    "Propiedades_Esteticas": { "display": "none" }
+                                },
+                                "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_navegador": {
                                     "Propiedades_Esteticas": { "display": "none" }
                                 }
                             },
