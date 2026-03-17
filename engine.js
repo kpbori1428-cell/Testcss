@@ -98,6 +98,7 @@ export const EngineTicker = {
 
 export class RenderNode {
     static globalZCounter = 0;
+    static registry = new Map(); // Registro de Nodos para Telemetría/Acciones
 
     constructor(data, parentDOM, path = "", level = 0, zIndex = 0) {
         if (level > 32) {
@@ -106,12 +107,16 @@ export class RenderNode {
 
         this.id = data.id || `node_${Math.random().toString(36).substr(2, 9)}`;
         this.path = path ? `${path}.${this.id}` : this.id;
+
+        // Registrar en el diccionario global de Path
+        RenderNode.registry.set(this.path, this);
         this.level = level;
         this.parentDOM = parentDOM;
 
         // Datos del nodo (Interfaz Nodo)
         this.propiedadesEsteticas = data.Propiedades_Esteticas || {};
         this.directivasLogicas = data.Directivas_Logicas || {};
+        this.acciones = data.Acciones || {}; // Manejo de Acciones
         this.transformBase = data.Transform_Base || { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, scale: 1 };
         this.hijosDatos = data.Hijos || [];
 
@@ -164,6 +169,15 @@ export class RenderNode {
 
         this.parentDOM.appendChild(this.domElement);
 
+        // Registrar Eventos (Acciones - Click)
+        if (Object.keys(this.acciones).length > 0) {
+            this.domElement.style.cursor = "pointer";
+            this.domElement.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this.ejecutarAcciones();
+            });
+        }
+
         // Suscripción al Ticker para actualizaciones
         EngineTicker.subscribe(this.updateCallback);
 
@@ -194,11 +208,43 @@ export class RenderNode {
         // Contrato de Limpieza
         EngineTicker.unsubscribe(this.updateCallback);
         this.camaraMemoria = {}; // Vaciar Cámara de Memoria
+        RenderNode.registry.delete(this.path); // Purga de Fuga de Referencia
 
         this.children.forEach(child => child.unmount());
 
         if (this.domElement && this.domElement.parentNode) {
             this.domElement.parentNode.removeChild(this.domElement);
+        }
+    }
+
+    // Ejecutar Acciones (Bus de Telemetría)
+    ejecutarAcciones() {
+        for (const [targetPath, payload] of Object.entries(this.acciones)) {
+            const targetNode = RenderNode.registry.get(targetPath);
+            if (targetNode) {
+                targetNode.aplicarParche(payload);
+            } else {
+                console.warn(`Fuga de Referencia: Nodo objetivo no encontrado en la ruta '${targetPath}'`);
+            }
+        }
+    }
+
+    // Aplicar Parche a Propiedades
+    aplicarParche(parche) {
+        if (parche.Propiedades_Esteticas) {
+            for (const [key, value] of Object.entries(parche.Propiedades_Esteticas)) {
+                this.propiedadesEsteticas[key] = value;
+                if (this.domElement) {
+                    this.domElement.style[key] = value;
+                }
+            }
+        }
+        if (parche.Transform_Base) {
+            Fusionar(this.transformBase, parche.Transform_Base);
+            this.targetTransform = { ...this.transformBase };
+        }
+        if (parche.Directivas_Logicas) {
+            Fusionar(this.directivasLogicas, parche.Directivas_Logicas);
         }
     }
 
