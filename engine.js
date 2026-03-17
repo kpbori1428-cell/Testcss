@@ -119,6 +119,7 @@ export class RenderNode {
         this.acciones = data.Acciones || {}; // Manejo de Acciones
         this.transformBase = data.Transform_Base || { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, scale: 1 };
         this.hijosDatos = data.Hijos || [];
+        this.innerHTML = data.innerHTML || "";
 
         // Cámara de Memoria para restaurar estado
         this.camaraMemoria = {};
@@ -168,8 +169,8 @@ export class RenderNode {
         }
 
         // Soporte para innerHTML si se proporciona (como excepción rápida para texto/emojis)
-        if (data.innerHTML) {
-            this.domElement.innerHTML = data.innerHTML;
+        if (this.innerHTML) {
+            this.domElement.innerHTML = this.innerHTML;
         }
 
         this.parentDOM.appendChild(this.domElement);

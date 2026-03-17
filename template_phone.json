@@ -489,19 +489,72 @@
                             "Transform_Base": { "x": 0, "y": 0, "z": 10, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
                             "Hijos": [
                                 {
-                                    "id": "dock_icon",
-                                    "Instancias": 4,
+                                    "id": "dock_telefono",
                                     "Propiedades_Esteticas": {
                                         "width": "50px",
                                         "height": "50px",
-                                        "background": "rgba(255, 255, 255, 0.9)",
+                                        "background": "linear-gradient(135deg, #0ba360 0%, #3cba92 100%)",
                                         "borderRadius": "12px",
-                                        "position": "relative"
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
                                     },
-                                    "Directivas_Logicas": {
-                                        "mouse-follow": "-10"
+                                    "Directivas_Logicas": { "mouse-follow": "-10" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_tel", "Propiedades_Esteticas": {"color": "#ffffff", "fontSize": "22px"}, "Hijos": [], "innerHTML": "📞"}]
+                                },
+                                {
+                                    "id": "dock_mensajes",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #38f9d7 0%, #43e97b 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
                                     },
-                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                    "Directivas_Logicas": { "mouse-follow": "-10" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_msj", "Propiedades_Esteticas": {"color": "#ffffff", "fontSize": "22px"}, "Hijos": [], "innerHTML": "💬"}]
+                                },
+                                {
+                                    "id": "dock_correo",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": { "mouse-follow": "-10" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_mail", "Propiedades_Esteticas": {"color": "#ffffff", "fontSize": "22px"}, "Hijos": [], "innerHTML": "📧"}]
+                                },
+                                {
+                                    "id": "dock_musica",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": { "mouse-follow": "-10" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_musica", "Propiedades_Esteticas": {"color": "#ffffff", "fontSize": "22px"}, "Hijos": [], "innerHTML": "🎵"}]
                                 }
                             ]
                         },
