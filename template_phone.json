@@ -106,71 +106,196 @@
                             "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
                             "Hijos": [
                                 {
-                                    "id": "app_icon",
-                                    "Instancias": 12,
+                                    "id": "app_calculadora",
                                     "Propiedades_Esteticas": {
                                         "width": "55px",
                                         "height": "55px",
-                                        "background": "rgba(255, 255, 255, 0.2)",
+                                        "background": "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
                                         "borderRadius": "15px",
                                         "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
-                                        "backdropFilter": "blur(10px)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "color": "#d63384",
+                                        "fontSize": "24px",
+                                        "fontWeight": "bold",
+                                        "fontFamily": "sans-serif"
+                                    },
+                                    "Acciones": {
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono": {
+                                            "Propiedades_Esteticas": { "background": "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.rejilla_apps": {
+                                            "Propiedades_Esteticas": { "display": "none" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_calculadora": {
+                                            "Propiedades_Esteticas": { "display": "flex" }
+                                        }
+                                    },
+                                    "Directivas_Logicas": { "mouse-follow": "-5" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt", "Propiedades_Esteticas": {"content": "'+-'"}}]
+                                },
+                                {
+                                    "id": "app_galeria",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
                                         "position": "relative",
                                         "border": "1px solid rgba(255,255,255,0.4)"
                                     },
                                     "Acciones": {
                                         "app.escena_telefono.cuerpo_telefono.pantalla_telefono": {
-                                            "Propiedades_Esteticas": {
-                                                "background": "linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)"
-                                            }
+                                            "Propiedades_Esteticas": { "background": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" }
                                         },
                                         "app.escena_telefono.cuerpo_telefono.pantalla_telefono.rejilla_apps": {
-                                            "Propiedades_Esteticas": {
-                                                "display": "none"
-                                            }
+                                            "Propiedades_Esteticas": { "display": "none" }
                                         },
-                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view": {
-                                            "Propiedades_Esteticas": {
-                                                "display": "flex"
-                                            }
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_galeria": {
+                                            "Propiedades_Esteticas": { "display": "flex" }
                                         }
                                     },
-                                    "Directivas_Logicas": {
-                                        "mouse-follow": "-5"
+                                    "Directivas_Logicas": { "mouse-follow": "-5" },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                },
+                                {
+                                    "id": "app_ajustes",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #434343 0%, #000000 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)"
                                     },
+                                    "Acciones": {
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono": {
+                                            "Propiedades_Esteticas": { "background": "linear-gradient(135deg, #434343 0%, #000000 100%)" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.rejilla_apps": {
+                                            "Propiedades_Esteticas": { "display": "none" }
+                                        },
+                                        "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_ajustes": {
+                                            "Propiedades_Esteticas": { "display": "flex" }
+                                        }
+                                    },
+                                    "Directivas_Logicas": { "mouse-follow": "-5" },
                                     "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
                                 }
                             ]
                         },
                         {
-                            "id": "app_view",
+                            "id": "app_view_calculadora",
                             "Propiedades_Esteticas": {
                                 "width": "100%",
                                 "flex": "1",
                                 "display": "none",
                                 "flexDirection": "column",
-                                "justifyContent": "center",
+                                "justifyContent": "flex-end",
                                 "alignItems": "center",
-                                "color": "white",
-                                "fontSize": "24px",
-                                "fontFamily": "sans-serif"
+                                "paddingBottom": "100px",
+                                "boxSizing": "border-box"
                             },
                             "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
                             "Hijos": [
                                 {
-                                    "id": "app_content",
+                                    "id": "pantalla_calculadora",
                                     "Propiedades_Esteticas": {
-                                        "width": "80%",
-                                        "height": "60%",
-                                        "background": "rgba(255,255,255,0.3)",
-                                        "borderRadius": "20px",
-                                        "boxShadow": "0 10px 30px rgba(0,0,0,0.2)",
-                                        "backdropFilter": "blur(10px)",
-                                        "display": "flex",
-                                        "justifyContent": "center",
-                                        "alignItems": "center"
+                                        "width": "90%",
+                                        "height": "80px",
+                                        "background": "rgba(255,255,255,0.2)",
+                                        "borderRadius": "15px",
+                                        "marginBottom": "20px"
                                     },
-                                    "Transform_Base": { "x": 0, "y": 0, "z": 10, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                },
+                                {
+                                    "id": "teclado_calculadora",
+                                    "Propiedades_Esteticas": {
+                                        "width": "90%",
+                                        "height": "250px",
+                                        "display": "flex",
+                                        "flexWrap": "wrap",
+                                        "gap": "10px",
+                                        "justifyContent": "space-around"
+                                    },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [
+                                        {
+                                            "id": "boton_calc",
+                                            "Instancias": 12,
+                                            "Propiedades_Esteticas": {
+                                                "width": "60px",
+                                                "height": "60px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "30px"
+                                            },
+                                            "Transform_Base": { "x": 0, "y": 0, "z": 2, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "app_view_galeria",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "flex": "1",
+                                "display": "none",
+                                "flexWrap": "wrap",
+                                "alignContent": "flex-start",
+                                "padding": "20px",
+                                "paddingTop": "40px",
+                                "gap": "10px",
+                                "boxSizing": "border-box"
+                            },
+                            "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                            "Hijos": [
+                                {
+                                    "id": "foto_galeria",
+                                    "Instancias": 6,
+                                    "Propiedades_Esteticas": {
+                                        "width": "80px",
+                                        "height": "80px",
+                                        "background": "rgba(255,255,255,0.3)",
+                                        "borderRadius": "10px",
+                                        "border": "2px solid rgba(255,255,255,0.5)"
+                                    },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 2, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "app_view_ajustes",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "flex": "1",
+                                "display": "none",
+                                "flexDirection": "column",
+                                "padding": "20px",
+                                "paddingTop": "60px",
+                                "gap": "15px",
+                                "boxSizing": "border-box"
+                            },
+                            "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                            "Hijos": [
+                                {
+                                    "id": "ajuste_item",
+                                    "Instancias": 4,
+                                    "Propiedades_Esteticas": {
+                                        "width": "100%",
+                                        "height": "50px",
+                                        "background": "rgba(255,255,255,0.1)",
+                                        "borderRadius": "10px",
+                                        "borderBottom": "1px solid rgba(255,255,255,0.2)"
+                                    },
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 2, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
                                 }
                             ]
                         },
@@ -233,10 +358,14 @@
                                         "display": "flex"
                                     }
                                 },
-                                "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view": {
-                                    "Propiedades_Esteticas": {
-                                        "display": "none"
-                                    }
+                                "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_calculadora": {
+                                    "Propiedades_Esteticas": { "display": "none" }
+                                },
+                                "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_galeria": {
+                                    "Propiedades_Esteticas": { "display": "none" }
+                                },
+                                "app.escena_telefono.cuerpo_telefono.pantalla_telefono.app_view_ajustes": {
+                                    "Propiedades_Esteticas": { "display": "none" }
                                 }
                             },
                             "Transform_Base": { "x": 0, "y": 0, "z": 20, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
