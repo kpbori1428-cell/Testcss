@@ -36,10 +36,16 @@ function handleScroll(e) {
 }
 
 // Inicializar listeners globales
+let inputMappingInitialized = false;
+
 export function initInputMapping() {
+    if (inputMappingInitialized) return;
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('wheel', handleScroll);
+
+    inputMappingInitialized = true;
 }
 
 // Ticker Global
@@ -348,6 +354,13 @@ export async function initEngine(jsonUrl) {
         EngineTicker.start();
 
         const appDom = document.getElementById('app');
+
+        // Desmontar el nodo raíz anterior si existe para permitir recarga
+        if (rootNode) {
+            rootNode.unmount();
+            rootNode = null;
+        }
+
         rootNode = new RenderNode(data, appDom, "app", 0, 0);
         rootNode.mount();
 
