@@ -167,6 +167,11 @@ export class RenderNode {
             this.domElement.style[key] = value;
         }
 
+        // Soporte para innerHTML si se proporciona (como excepción rápida para texto/emojis)
+        if (data.innerHTML) {
+            this.domElement.innerHTML = data.innerHTML;
+        }
+
         this.parentDOM.appendChild(this.domElement);
 
         // Registrar Eventos (Acciones - Click)

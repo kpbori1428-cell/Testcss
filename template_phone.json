@@ -136,7 +136,7 @@
                                     },
                                     "Directivas_Logicas": { "mouse-follow": "-5" },
                                     "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
-                                    "Hijos": [{"id": "txt", "Propiedades_Esteticas": {"content": "'+-'"}}]
+                                    "Hijos": [{"id": "txt", "Propiedades_Esteticas": {"display": "block"}, "Hijos": [], "innerHTML": "+-"}]
                                 },
                                 {
                                     "id": "app_galeria",
@@ -147,7 +147,10 @@
                                         "borderRadius": "15px",
                                         "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
                                         "position": "relative",
-                                        "border": "1px solid rgba(255,255,255,0.4)"
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
                                     },
                                     "Acciones": {
                                         "app.escena_telefono.cuerpo_telefono.pantalla_telefono": {
@@ -161,7 +164,8 @@
                                         }
                                     },
                                     "Directivas_Logicas": { "mouse-follow": "-5" },
-                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                                    "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                                    "Hijos": [{"id": "txt_galeria", "Propiedades_Esteticas": {"color": "#ffffff", "fontSize": "24px", "margin": "10px"}, "Hijos": [], "innerHTML": "🖼️"}]
                                 },
                                 {
                                     "id": "app_ajustes",
@@ -172,7 +176,10 @@
                                         "borderRadius": "15px",
                                         "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
                                         "position": "relative",
-                                        "border": "1px solid rgba(255,255,255,0.4)"
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
                                     },
                                     "Acciones": {
                                         "app.escena_telefono.cuerpo_telefono.pantalla_telefono": {
@@ -187,7 +194,7 @@
                                     },
                                     "Directivas_Logicas": { "mouse-follow": "-5" },
                                     "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
-                                    "Hijos": [{"id": "txt_ajustes", "Propiedades_Esteticas": {"content": "'⚙'", "color": "#ffffff", "fontSize": "24px", "margin": "10px"}}]
+                                    "Hijos": [{"id": "txt_ajustes", "Propiedades_Esteticas": {"color": "#ffffff", "fontSize": "24px", "margin": "10px"}, "Hijos": [], "innerHTML": "⚙"}]
                                 },
                                 {
                                     "id": "app_mapa",
@@ -216,7 +223,7 @@
                                     },
                                     "Directivas_Logicas": { "mouse-follow": "-5" },
                                     "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
-                                    "Hijos": [{"id": "txt_mapa", "Propiedades_Esteticas": {"content": "'📍'", "color": "#00695c", "fontSize": "24px", "margin": "10px"}}]
+                                    "Hijos": [{"id": "txt_mapa", "Propiedades_Esteticas": {"color": "#00695c", "fontSize": "24px", "margin": "10px"}, "Hijos": [], "innerHTML": "📍"}]
                                 },
                                 {
                                     "id": "app_navegador",
@@ -245,7 +252,7 @@
                                     },
                                     "Directivas_Logicas": { "mouse-follow": "-5" },
                                     "Transform_Base": { "x": 0, "y": 0, "z": 5, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
-                                    "Hijos": [{"id": "txt_nav", "Propiedades_Esteticas": {"content": "'🌐'", "color": "#283593", "fontSize": "24px", "margin": "10px"}}]
+                                    "Hijos": [{"id": "txt_nav", "Propiedades_Esteticas": {"color": "#283593", "fontSize": "24px", "margin": "10px"}, "Hijos": [], "innerHTML": "🌐"}]
                                 }
                             ]
                         },
@@ -468,13 +475,16 @@
                                 "height": "80px",
                                 "background": "rgba(255, 255, 255, 0.2)",
                                 "borderRadius": "25px",
-                                "margin": "auto auto 10px auto",
+                                "margin": "0 auto 10px auto",
                                 "backdropFilter": "blur(15px)",
                                 "display": "flex",
                                 "justifyContent": "space-around",
                                 "alignItems": "center",
                                 "padding": "0 10px",
-                                "boxSizing": "border-box"
+                                "boxSizing": "border-box",
+                                "position": "absolute",
+                                "bottom": "15px",
+                                "left": "5%"
                             },
                             "Transform_Base": { "x": 0, "y": 0, "z": 10, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
                             "Hijos": [
