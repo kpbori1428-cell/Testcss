@@ -1,0 +1,17 @@
+{
+    "V4_CUBE": {
+        "props": { "width": "200px", "height": "200px", "backgroundColor": "rgba(0, 150, 255, 0.4)", "border": "2px solid #0096ff", "display": "flex", "justifyContent": "center", "alignItems": "center" },
+        "logic": { "extrude": 200, "mouseFollow": { "inertia": 0.9 } }
+    },
+    "V4_STAR": {
+        "props": {
+            "width": "4px", "height": "4px",
+            "backgroundColor": "white",
+            "borderRadius": "50%",
+            "boxShadow": "0 0 10px white"
+        },
+        "logic": {
+            "parallax": { "factor": 0.2 }
+        }
+    }
+}

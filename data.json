@@ -1,0 +1,5 @@
+{
+    "id": "scene",
+    "props": { "width": "100%", "height": "100%", "display": "flex", "justifyContent": "center", "alignItems": "center" },
+    "children": [ { "id": "cube", "template": "V4_CUBE", "children": [ { "id": "text", "props": { "color": "white", "innerHTML": "V4 Engine" } } ] } ]
+}
