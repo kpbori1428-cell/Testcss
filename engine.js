@@ -173,10 +173,23 @@ export class RenderNode {
             this.domElement.innerHTML = this.innerHTML;
         }
 
+        // Manejo Inteligente de Pointer Events (Data-Driven Architecture Fix)
+        // Por defecto, las capas CSS 3D absorben clics, haciendo el DOM inoperable por debajo ("vidrio").
+        // Solo habilitamos punteros en nodos que tengan: acciones, background, border, texto o box-shadow.
+        const pE = this.propiedadesEsteticas;
+        const hasVisuals = pE.background || pE.backgroundColor || pE.backgroundImage || pE.border || pE.boxShadow || pE.color || this.innerHTML;
+        const hasActions = Object.keys(this.acciones).length > 0;
+
+        if (hasActions || hasVisuals) {
+            this.domElement.style.pointerEvents = 'auto';
+        } else {
+            this.domElement.style.pointerEvents = 'none';
+        }
+
         this.parentDOM.appendChild(this.domElement);
 
         // Registrar Eventos (Acciones - Click)
-        if (Object.keys(this.acciones).length > 0) {
+        if (hasActions) {
             this.domElement.style.cursor = "pointer";
             this.domElement.addEventListener("click", (e) => {
                 e.stopPropagation();
