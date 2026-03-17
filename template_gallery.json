@@ -40,7 +40,8 @@
                         "height": "300px",
                         "background": "linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)",
                         "borderRadius": "20px",
-                        "boxShadow": "0 10px 30px rgba(0,0,0,0.5)"
+                        "boxShadow": "0 10px 30px rgba(0,0,0,0.5)",
+                        "position": "relative"
                     },
                     "Directivas_Logicas": {
                         "mouse-follow": "-40",

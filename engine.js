@@ -97,6 +97,8 @@ export const EngineTicker = {
 // ==========================================
 
 export class RenderNode {
+    static globalZCounter = 0;
+
     constructor(data, parentDOM, path = "", level = 0, zIndex = 0) {
         if (level > 32) {
             throw new Error(`Profundidad Excedida: Límite de 32 niveles alcanzado en ${path}`);
@@ -135,7 +137,7 @@ export class RenderNode {
         this.isSleeping = false;
 
         // "Z-Index Lógico: Aumenta con la recursión (Hijos > Padres)"
-        this.zIndex = zIndex + level;
+        this.zIndex = RenderNode.globalZCounter++;
 
         this.updateCallback = this.update.bind(this);
     }
@@ -401,6 +403,9 @@ export async function initEngine(jsonUrl) {
             rootNode.unmount();
             rootNode = null;
         }
+
+        // Resetear contador global de Z-Index
+        RenderNode.globalZCounter = 0;
 
         rootNode = new RenderNode(data, appDom, "app", 0, 0);
         rootNode.mount();
