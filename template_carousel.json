@@ -26,32 +26,32 @@
             "Hijos": [
                 {
                     "id": "panel_0",
-                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(255,0,0,0.5)", "border": "2px solid red", "backdropFilter": "blur(5px)" },
+                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(255,0,0,0.5)", "border": "2px solid red",
                     "Transform_Base": { "x": 0, "y": 0, "z": 300, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
                 },
                 {
                     "id": "panel_60",
-                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(255,165,0,0.5)", "border": "2px solid orange", "backdropFilter": "blur(5px)" },
+                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(255,165,0,0.5)", "border": "2px solid orange",
                     "Transform_Base": { "x": 0, "y": 0, "z": 300, "rx": 0, "ry": 60, "rz": 0, "scale": 1 }
                 },
                 {
                     "id": "panel_120",
-                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(255,255,0,0.5)", "border": "2px solid yellow", "backdropFilter": "blur(5px)" },
+                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(255,255,0,0.5)", "border": "2px solid yellow",
                     "Transform_Base": { "x": 0, "y": 0, "z": 300, "rx": 0, "ry": 120, "rz": 0, "scale": 1 }
                 },
                 {
                     "id": "panel_180",
-                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(0,128,0,0.5)", "border": "2px solid green", "backdropFilter": "blur(5px)" },
+                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(0,128,0,0.5)", "border": "2px solid green",
                     "Transform_Base": { "x": 0, "y": 0, "z": 300, "rx": 0, "ry": 180, "rz": 0, "scale": 1 }
                 },
                 {
                     "id": "panel_240",
-                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(0,0,255,0.5)", "border": "2px solid blue", "backdropFilter": "blur(5px)" },
+                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(0,0,255,0.5)", "border": "2px solid blue",
                     "Transform_Base": { "x": 0, "y": 0, "z": 300, "rx": 0, "ry": 240, "rz": 0, "scale": 1 }
                 },
                 {
                     "id": "panel_300",
-                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(128,0,128,0.5)", "border": "2px solid purple", "backdropFilter": "blur(5px)" },
+                    "Propiedades_Esteticas": { "width": "200px", "height": "300px", "background": "rgba(128,0,128,0.5)", "border": "2px solid purple",
                     "Transform_Base": { "x": 0, "y": 0, "z": 300, "rx": 0, "ry": 300, "rz": 0, "scale": 1 }
                 }
             ]

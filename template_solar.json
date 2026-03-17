@@ -17,15 +17,22 @@
             "Propiedades_Esteticas": {
                 "width": "150px",
                 "height": "150px",
-                "background": "radial-gradient(circle, #ffcc00, #ff6600)",
-                "borderRadius": "50%",
-                "boxShadow": "0 0 100px #ff9900"
+                "transformStyle": "preserve-3d"
             },
             "Directivas_Logicas": {
                 "mouse-follow": "20"
             },
             "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
             "Hijos": [
+                {
+                    "id": "sol_cara1", "Propiedades_Esteticas": { "position": "absolute", "width": "150px", "height": "150px", "background": "radial-gradient(circle, #ffcc00, #ff6600)", "borderRadius": "50%", "boxShadow": "0 0 100px #ff9900" }, "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                },
+                {
+                    "id": "sol_cara2", "Propiedades_Esteticas": { "position": "absolute", "width": "150px", "height": "150px", "background": "radial-gradient(circle, #ffcc00, #ff6600)", "borderRadius": "50%" }, "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 90, "ry": 0, "rz": 0, "scale": 1 }
+                },
+                {
+                    "id": "sol_cara3", "Propiedades_Esteticas": { "position": "absolute", "width": "150px", "height": "150px", "background": "radial-gradient(circle, #ffcc00, #ff6600)", "borderRadius": "50%" }, "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 90, "rz": 0, "scale": 1 }
+                },
                 {
                     "id": "orbita_1",
                     "Propiedades_Esteticas": {
@@ -44,17 +51,20 @@
                             "Propiedades_Esteticas": {
                                 "width": "40px",
                                 "height": "40px",
-                                "background": "linear-gradient(to right, #43e97b 0%, #38f9d7 100%)",
-                                "borderRadius": "50%",
+                                "transformStyle": "preserve-3d",
                                 "position": "absolute",
                                 "top": "0",
-                                "left": "180px",
-                                "boxShadow": "0 0 20px #38f9d7"
+                                "left": "180px"
                             },
                             "Directivas_Logicas": {
                                 "mouse-follow": "-50"
                             },
-                            "Transform_Base": { "x": 0, "y": 0, "z": 50, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                            "Transform_Base": { "x": 0, "y": 0, "z": 50, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+                            "Hijos": [
+                                { "id": "p1_c1", "Propiedades_Esteticas": { "position": "absolute", "width": "40px", "height": "40px", "background": "#38f9d7", "boxShadow": "0 0 20px #38f9d7", "borderRadius": "50%" }, "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }},
+                                { "id": "p1_c2", "Propiedades_Esteticas": { "position": "absolute", "width": "40px", "height": "40px", "background": "#38f9d7", "borderRadius": "50%" }, "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 90, "ry": 0, "rz": 0, "scale": 1 }},
+                                { "id": "p1_c3", "Propiedades_Esteticas": { "position": "absolute", "width": "40px", "height": "40px", "background": "#38f9d7", "borderRadius": "50%" }, "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 90, "rz": 0, "scale": 1 }}
+                            ]
                         }
                     ]
                 },
@@ -72,21 +82,27 @@
                     "Transform_Base": { "x": 0, "y": 0, "z": -50, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
                     "Hijos": [
                         {
-                            "id": "planeta_2",
+                            "id": "planeta_2_cubo",
                             "Propiedades_Esteticas": {
                                 "width": "60px",
                                 "height": "60px",
-                                "background": "linear-gradient(to top, #fcc5e4 0%, #fda34b 15%, #ff7882 35%, #c8699e 52%, #7046aa 71%, #0c1db8 87%, #020f75 100%)",
-                                "borderRadius": "50%",
+                                "transformStyle": "preserve-3d",
                                 "position": "absolute",
                                 "bottom": "50px",
-                                "right": "50px",
-                                "boxShadow": "0 0 30px #fda34b"
+                                "right": "50px"
                             },
                             "Directivas_Logicas": {
-                                "look-at-mouse": "-90"
+                                "look-at-mouse": "-180"
                             },
-                            "Transform_Base": { "x": 0, "y": 0, "z": 80, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                            "Transform_Base": { "x": 0, "y": 0, "z": 80, "rx": 45, "ry": 45, "rz": 0, "scale": 1 },
+                            "Hijos": [
+                                { "id": "f", "Propiedades_Esteticas": { "position": "absolute", "width": "60px", "height": "60px", "background": "rgba(253, 163, 75, 0.8)", "border": "1px solid #fff" }, "Transform_Base": { "x": 0, "y": 0, "z": 30, "rx": 0, "ry": 0, "rz": 0, "scale": 1 } },
+                                { "id": "b", "Propiedades_Esteticas": { "position": "absolute", "width": "60px", "height": "60px", "background": "rgba(200, 105, 158, 0.8)", "border": "1px solid #fff" }, "Transform_Base": { "x": 0, "y": 0, "z": -30, "rx": 0, "ry": 180, "rz": 0, "scale": 1 } },
+                                { "id": "r", "Propiedades_Esteticas": { "position": "absolute", "width": "60px", "height": "60px", "background": "rgba(112, 70, 170, 0.8)", "border": "1px solid #fff" }, "Transform_Base": { "x": 30, "y": 0, "z": 0, "rx": 0, "ry": 90, "rz": 0, "scale": 1 } },
+                                { "id": "l", "Propiedades_Esteticas": { "position": "absolute", "width": "60px", "height": "60px", "background": "rgba(255, 120, 130, 0.8)", "border": "1px solid #fff" }, "Transform_Base": { "x": -30, "y": 0, "z": 0, "rx": 0, "ry": -90, "rz": 0, "scale": 1 } },
+                                { "id": "t", "Propiedades_Esteticas": { "position": "absolute", "width": "60px", "height": "60px", "background": "rgba(252, 197, 228, 0.8)", "border": "1px solid #fff" }, "Transform_Base": { "x": 0, "y": -30, "z": 0, "rx": 90, "ry": 0, "rz": 0, "scale": 1 } },
+                                { "id": "bottom", "Propiedades_Esteticas": { "position": "absolute", "width": "60px", "height": "60px", "background": "rgba(12, 29, 184, 0.8)", "border": "1px solid #fff" }, "Transform_Base": { "x": 0, "y": 30, "z": 0, "rx": -90, "ry": 0, "rz": 0, "scale": 1 } }
+                            ]
                         }
                     ]
                 }

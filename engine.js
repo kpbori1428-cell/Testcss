@@ -145,7 +145,10 @@ export class RenderNode {
         this.domElement = document.createElement('div');
         this.domElement.id = this.id;
         this.domElement.className = 'node';
-        this.domElement.style.zIndex = this.zIndex;
+
+        // IMPORTANTE: NO aplicar zIndex de CSS directamente porque fuerza un stacking context
+        // que rompe el z-buffer nativo del navegador (oculsión 3D).
+        // this.domElement.style.zIndex = this.zIndex;
 
         // Z-Fighting fix ("micro-compensación automática de +0.001px")
         // Como todos los hermanos empiezan en zIndex diferentes por jerarquía, le sumamos el index
@@ -345,6 +348,43 @@ export function Fusionar(Principal, Parcial, Nivel_Actual = 0) {
 // Inicializador del Engine
 let rootNode = null;
 
+function triggerGlobalRestore() {
+    if (!rootNode) return;
+
+    // Función recursiva para restaurar estado en todo el árbol
+    const restaurarArbol = (node) => {
+        if (!node) return;
+        node.restaurarEstado();
+        node.children.forEach(child => restaurarArbol(child));
+    };
+
+    restaurarArbol(rootNode);
+}
+
+// Configurar escuchadores globales para RestaurarEstado
+function setupRestoreTriggers() {
+    // 1. "Mouse-Leave"
+    document.addEventListener('mouseleave', () => {
+        triggerGlobalRestore();
+    });
+
+    // 2. "Fin-de-Scroll"
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            triggerGlobalRestore();
+        }, 150); // 150ms después de que termine el scroll
+    }, { passive: true });
+
+    window.addEventListener('wheel', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            triggerGlobalRestore();
+        }, 150);
+    }, { passive: true });
+}
+
 export async function initEngine(jsonUrl) {
     try {
         const response = await fetch(jsonUrl);
@@ -352,6 +392,7 @@ export async function initEngine(jsonUrl) {
 
         initInputMapping();
         EngineTicker.start();
+        setupRestoreTriggers();
 
         const appDom = document.getElementById('app');
 
