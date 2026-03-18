@@ -163,6 +163,8 @@
                             "Hijos": [
                                 {
                                     "id": "app_calculadora",
+                                    "app_json": "app_view_calculadora.json",
+                                    "App_Logic": "AppLauncher",
                                     "Propiedades_Esteticas": {
                                         "width": "55px",
                                         "height": "55px",
@@ -205,6 +207,8 @@
                                 },
                                 {
                                     "id": "app_galeria",
+                                    "App_Logic": "AppLauncher",
+                                    "app_json": "app_view_galeria.json",
                                     "Propiedades_Esteticas": {
                                         "width": "55px",
                                         "height": "55px",

@@ -97,21 +97,26 @@ export class CalcButtonLogic {
     constructor(node) {
         this.node = node;
         this.value = node.innerHTML.trim(); // Tomamos el símbolo (+, -, 7, =) del propio texto del botón
-
-        // Calculamos la ruta base de la app (dos niveles arriba: ...teclado.btn_X -> ...app_view_calculadora)
-        const parts = this.node.path.split(".");
-        this.appPath = parts.slice(0, -2).join(".");
     }
 
     onClick() {
-        console.log(`[App] CalcButton click: ${this.value} en path ${this.appPath}`);
-        // Buscar la instancia de la app padre
-        const appNode = RenderNode.registry.get(this.appPath);
-        if (appNode && appNode.appLogicInstance) {
-            // Ejecutar la matemática real
+        console.log(`[App] CalcButton click: ${this.value}`);
+
+        // Buscar hacia arriba el nodo que contenga CalculadoraLogic
+        let currentNode = this.node;
+        let appNode = null;
+        while (currentNode && currentNode.parentElement) {
+            currentNode = currentNode.parentElement;
+            if (currentNode.appLogicInstance && currentNode.appLogicInstance.handleButtonClick) {
+                appNode = currentNode;
+                break;
+            }
+        }
+
+        if (appNode) {
             appNode.appLogicInstance.handleButtonClick(this.value);
         } else {
-            console.warn(`[App] No se encontró appNode en path: ${this.appPath}`);
+            console.warn(`[App] No se encontró la Calculadora padre para el botón: ${this.value}`);
         }
     }
 }
