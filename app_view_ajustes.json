@@ -1,0 +1,51 @@
+{
+    "id": "app_view_ajustes",
+    "App_Logic": "Ajustes",
+    "Propiedades_Esteticas": {
+        "backgroundColor": "#2c2c2c",
+        "width": "100%",
+        "flex": "1",
+
+        "flexDirection": "column",
+        "padding": "20px",
+        "paddingTop": "60px",
+        "gap": "15px",
+        "boxSizing": "border-box",
+        "position": "absolute",
+        "height": "100%",
+        "top": "0",
+        "left": "0"
+    },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": 5,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
+    "Hijos": [
+        {
+            "id": "ajuste_item",
+            "Instancias": 3,
+            "Propiedades_Esteticas": {
+                "width": "100%",
+                "height": "50px",
+                "background": "rgba(255,255,255,0.1)",
+                "borderRadius": "10px",
+                "borderBottom": "1px solid rgba(255,255,255,0.2)",
+                "position": "relative"
+            },
+            "Transform_Base": {
+                "x": 0,
+                "y": 0,
+                "z": 2,
+                "rx": 0,
+                "ry": 0,
+                "rz": 0,
+                "scale": 1
+            }
+        }
+    ]
+}

@@ -123,6 +123,8 @@ export class RenderNode {
         this.directivasLogicas = data.Directivas_Logicas || {};
         this.acciones = data.Acciones || {}; // Manejo de Acciones
         this.appLogicName = data.App_Logic || null; // Controlador de aplicación
+        this.app_json = data.app_json || null; // Reference for app launcher
+
         this.appLogicInstance = null;
         this.transformBase = data.Transform_Base || { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, scale: 1 };
         this.hijosDatos = data.Hijos || [];

@@ -1,0 +1,73 @@
+{
+    "id": "app_view_navegador",
+    "App_Logic": "Navegador",
+    "Propiedades_Esteticas": {
+        "backgroundColor": "#f0f0f0",
+        "width": "100%",
+        "flex": "1",
+        "flexDirection": "column",
+        "alignItems": "center",
+        "paddingTop": "20px",
+        "boxSizing": "border-box",
+        "position": "absolute",
+        "height": "100%",
+        "top": "0",
+        "left": "0"
+    },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": 5,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
+    "Hijos": [
+        {
+            "id": "barra_busqueda_container",
+            "Propiedades_Esteticas": {
+                "width": "90%",
+                "height": "40px",
+                "background": "white",
+                "borderRadius": "20px",
+                "marginBottom": "10px",
+                "boxShadow": "0 2px 5px rgba(0,0,0,0.2)",
+                "display": "flex",
+                "alignItems": "center",
+                "paddingLeft": "15px",
+                "paddingRight": "15px",
+                "boxSizing": "border-box",
+                "position": "relative"
+            },
+            "Transform_Base": {
+                "x": 0,
+                "y": 0,
+                "z": 5,
+                "rx": 0,
+                "ry": 0,
+                "rz": 0,
+                "scale": 1
+            }
+        },
+        {
+            "id": "webview_contenedor",
+            "Propiedades_Esteticas": {
+                "width": "100%",
+                "flex": "1",
+                "position": "relative",
+                "background": "white",
+                "borderTop": "1px solid #ddd"
+            },
+            "Transform_Base": {
+                "x": 0,
+                "y": 0,
+                "z": 2,
+                "rx": 0,
+                "ry": 0,
+                "rz": 0,
+                "scale": 1
+            }
+        }
+    ]
+}

@@ -1,0 +1,51 @@
+{
+    "id": "app_view_galeria",
+    "Propiedades_Esteticas": {
+        "width": "100%",
+        "flex": "1",
+        "display": "none",
+        "flexWrap": "wrap",
+        "alignContent": "flex-start",
+        "padding": "20px",
+        "paddingTop": "40px",
+        "gap": "10px",
+        "boxSizing": "border-box",
+        "position": "absolute",
+        "height": "100%",
+        "top": "0",
+        "left": "0"
+    },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": 5,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
+    "Hijos": [
+        {
+            "id": "foto_galeria",
+            "Instancias": 6,
+            "Propiedades_Esteticas": {
+                "width": "80px",
+                "height": "80px",
+                "background": "rgba(255,255,255,0.3)",
+                "borderRadius": "10px",
+                "border": "2px solid rgba(255,255,255,0.5)",
+                "position": "relative"
+            },
+            "Transform_Base": {
+                "x": 0,
+                "y": 0,
+                "z": 2,
+                "rx": 0,
+                "ry": 0,
+                "rz": 0,
+                "scale": 1
+            }
+        }
+    ],
+    "App_Logic": "Galeria"
+}
