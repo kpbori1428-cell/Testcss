@@ -23,6 +23,9 @@ export class BehaviorManager {
         if (this.logic.autoAnimate) this.setupAutoAnimate(this.logic.autoAnimate);
         if (this.logic.colorCycle) this.setupColorCycle(this.logic.colorCycle);
         if (this.logic.recycle) this.setupRecycle(this.logic.recycle);
+        if (this.logic.spring) this.setupSpring(this.logic.spring);
+        if (this.logic.float) this.setupFloat(this.logic.float);
+        if (this.logic.parallax) this.setupParallax(this.logic.parallax);
         if (this.logic.actions) this.setupActions(this.logic.actions);
 
         this.initialized = true;
@@ -75,6 +78,38 @@ export class BehaviorManager {
 
     setupRecycle(config) {
         this.renderNode.wakeUp();
+    }
+
+    setupFloat(config) {
+        // config = { amplitude: 20, speed: 1.5 }
+        this.renderNode.wakeUp();
+    }
+
+    setupParallax(config) {
+        // config = { factorX: 0.1, factorY: 0.1 }
+        const handler = (pointer) => {
+            if (!this.renderNode || !this.renderNode.mounted || !this.renderNode.targetTransform) return;
+            this.renderNode.wakeUp();
+            const bt = (this.renderNode.data && this.renderNode.data.baseTransform) || {};
+            this.renderNode.targetTransform.translateX = (bt.translateX || 0) + (pointer.normalX * (config.factorX || 50));
+            this.renderNode.targetTransform.translateY = (bt.translateY || 0) + (pointer.normalY * (config.factorY || 50));
+        };
+        telemetry.subscribe('input:pointer', handler);
+        this.unsubscribeFunctions.push(() => telemetry.unsubscribe('input:pointer', handler));
+    }
+
+    setupSpring(config) {
+        this.springState = {
+            velocityX: 0, velocityY: 0,
+            offsetX: 0, offsetY: 0
+        };
+
+        const handler = (pointer) => {
+            if (!this.renderNode || !this.renderNode.mounted) return;
+            this.renderNode.wakeUp();
+        };
+        telemetry.subscribe('input:pointer', handler);
+        this.unsubscribeFunctions.push(() => telemetry.unsubscribe('input:pointer', handler));
     }
 
     setupColorCycle(config) {
@@ -135,6 +170,36 @@ export class BehaviorManager {
         this.time += deltaTime;
         let isMoving = false;
 
+        // Process Spring Physics
+        if (this.logic.spring && this.springState) {
+            const config = this.logic.spring;
+            const stiffness = config.stiffness || 0.1;
+            const damping = config.damping || 0.8;
+            const mult = config.multiplier || 100;
+
+            const pointer = inputManager.getState().pointer;
+            const targetX = pointer.normalX * mult;
+            const targetY = pointer.normalY * mult;
+
+            const ax = (targetX - this.springState.offsetX) * stiffness;
+            const ay = (targetY - this.springState.offsetY) * stiffness;
+
+            this.springState.velocityX += ax;
+            this.springState.velocityY += ay;
+            this.springState.velocityX *= damping;
+            this.springState.velocityY *= damping;
+
+            this.springState.offsetX += this.springState.velocityX;
+            this.springState.offsetY += this.springState.velocityY;
+
+            this.renderNode.targetTransform.translateX = (this.renderNode.data.baseTransform.translateX || 0) + this.springState.offsetX;
+            this.renderNode.targetTransform.translateY = (this.renderNode.data.baseTransform.translateY || 0) + this.springState.offsetY;
+
+            if (Math.abs(this.springState.velocityX) > 0.01 || Math.abs(this.springState.velocityY) > 0.01) {
+                isMoving = true;
+            }
+        }
+
         const bt = (this.renderNode.data && this.renderNode.data.baseTransform) || {};
         const target = this.renderNode.targetTransform;
         const current = this.renderNode.currentTransform;
@@ -173,6 +238,15 @@ export class BehaviorManager {
             if (current.translateZ > bounds.z) { current.translateZ = -bounds.z; target.translateZ = -bounds.z; }
             else if (current.translateZ < -bounds.z) { current.translateZ = bounds.z; target.translateZ = bounds.z; }
 
+            isMoving = true;
+        }
+
+        // Process Float
+        if (this.logic.float) {
+            const config = this.logic.float;
+            const amp = config.amplitude || 20;
+            const speed = config.speed || 1.5;
+            target.translateY = (bt.translateY || 0) + Math.sin(this.time * speed) * amp;
             isMoving = true;
         }
 

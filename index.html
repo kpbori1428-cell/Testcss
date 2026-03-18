@@ -18,10 +18,13 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await engine.init('app');
             await engine.loadTemplates('templates.json');
-            await engine.loadAndMount('data.json');
 
-            // Example of transition after 10s
-            // setTimeout(() => engine.transitionTo('scene2.json'), 10000);
+            // Load Volumetric Demo by default
+            await engine.loadAndMount('volumetric_demo.json');
+            engine.applyTheme('solar');
+
+            // Switch after 8s for variety
+            setTimeout(() => engine.transitionTo('data.json'), 8000);
         });
     </script>
 </body>

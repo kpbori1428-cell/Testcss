@@ -1,6 +1,7 @@
 import { inputManager } from '../events/InputManager.js';
 import { renderer } from '../render/Renderer.js';
 import { sceneManager } from './SceneManager.js';
+import { themeManager } from './ThemeManager.js';
 import { DataLoader } from '../loaders/DataLoader.js';
 
 class Engine {
@@ -25,6 +26,10 @@ class Engine {
 
     async transitionTo(url) {
         return await sceneManager.transitionTo(url);
+    }
+
+    applyTheme(themeName) {
+        themeManager.apply(themeName);
     }
 }
 export const engine = new Engine();

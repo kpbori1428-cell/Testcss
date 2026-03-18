@@ -46,7 +46,47 @@ export class NodeFactory {
             });
         }
 
+        // 3D Extrusion Logic
+        if (data.logic && data.logic.extrude) {
+            this.generateExtrusion(node, data.logic.extrude);
+        }
+
         return node;
+    }
+
+    generateExtrusion(node, depthValue) {
+        const w = parseInt(node.props.width) || 100;
+        const h = parseInt(node.props.height) || 100;
+        const d = parseInt(depthValue) || 100;
+
+        const faces = [
+            { id: 'back', t: { translateZ: -d, rotateY: 180 } },
+            { id: 'left', t: { translateX: -w/2, translateZ: -d/2, rotateY: -90 }, w: d, h: h },
+            { id: 'right', t: { translateX: w/2, translateZ: -d/2, rotateY: 90 }, w: d, h: h },
+            { id: 'top', t: { translateY: -h/2, translateZ: -d/2, rotateX: 90 }, w: w, h: d },
+            { id: 'bottom', t: { translateY: h/2, translateZ: -d/2, rotateX: -90 }, w: w, h: d }
+        ];
+
+        faces.forEach(face => {
+            const faceData = {
+                id: `${node.id}_face_${face.id}`,
+                props: {
+                    ...node.props,
+                    width: (face.w || w) + 'px',
+                    height: (face.h || h) + 'px',
+                    transform: face.t,
+                    opacity: node.props.opacity || 1
+                },
+                logic: {}
+            };
+            // Avoid infinite recursion
+            delete faceData.props.children;
+            delete faceData.logic.extrude;
+
+            const faceNode = new NodeInterface(faceData, node.path);
+            node.childrenData.push(faceNode);
+            this.nodes.set(faceNode.path, faceNode);
+        });
     }
 
     createInstances(data, parentPath, depth) {
@@ -108,6 +148,11 @@ export class NodeFactory {
                         node.childrenData.push(childNodes);
                      }
                 });
+            }
+
+            // 3D Extrusion Logic for Instances
+            if (baseData.logic && baseData.logic.extrude) {
+                this.generateExtrusion(node, baseData.logic.extrude);
             }
 
             generatedNodes.push(node);

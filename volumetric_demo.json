@@ -1,0 +1,30 @@
+{
+    "id": "volumetric_scene",
+    "props": { "width": "100%", "height": "100%", "display": "flex", "justifyContent": "center", "alignItems": "center" },
+    "logic": { "lookAtMouse": { "maxRotationX": 30, "maxRotationY": 30 } },
+    "children": [
+        {
+            "id": "cube_grid",
+            "logic": {
+                "instancias": {
+                    "cantidad": 12,
+                    "spread": { "x": 800, "y": 800, "z": 400 }
+                }
+            },
+            "props": {
+                "width": "120px", "height": "120px",
+                "backgroundColor": "rgba(0, 150, 255, 0.3)",
+                "border": "1px solid var(--primary)",
+                "transform": {
+                    "translateZ": "= noise(time + index) * 200",
+                    "rotateX": "= time * 20",
+                    "rotateY": "= time * 30"
+                }
+            },
+            "logic": {
+                "extrude": 100,
+                "spring": { "stiffness": 0.05, "damping": 0.85, "multiplier": 50 }
+            }
+        }
+    ]
+}

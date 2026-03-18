@@ -23,16 +23,31 @@ export class FormulaParser {
         const sanitized = body.replace(/[^a-zA-Z0-9\s\+\-\*\/\(\)\.,]/g, '');
 
         try {
+            // Pseudo-noise function implementation
+            const noiseSrc = `
+                const noise = (x) => {
+                    const i = Math.floor(x);
+                    const f = x - i;
+                    const w = f * f * (3 - 2 * f);
+                    const rand = (n) => {
+                        const v = Math.sin(n) * 43758.5453123;
+                        return v - Math.floor(v);
+                    };
+                    return rand(i) * (1 - w) + rand(i + 1) * w;
+                };
+            `;
+
             // Reemplazar funciones matemáticas estándar por Math.func
             const finalBody = sanitized
                 .replace(/\b(sin|cos|tan|abs|sqrt|pow|min|max|PI|E)\b/g, 'Math.$1')
+                .replace(/\b(noise)\b/g, 'noise')
                 .replace(/\b(index)\b/g, 'args.index')
                 .replace(/\b(total)\b/g, 'args.total')
                 .replace(/\b(time)\b/g, 'args.time')
                 .replace(/\b(mouseX)\b/g, 'args.mouseX')
                 .replace(/\b(mouseY)\b/g, 'args.mouseY');
 
-            const fn = new Function('args', `return ${finalBody};`);
+            const fn = new Function('args', `${noiseSrc} return ${finalBody};`);
             this.cache.set(formula, fn);
             return fn;
         } catch (error) {
