@@ -1,0 +1,63 @@
+{
+    "id": "zenith_scene",
+    "props": { "width": "100%", "height": "100%", "display": "flex", "justifyContent": "center", "alignItems": "center" },
+    "logic": { "lookAtMouse": { "maxRotationX": 15, "maxRotationY": 15 } },
+    "children": [
+        {
+            "id": "central_obelisk",
+            "props": {
+                "width": "80px", "height": "400px",
+                "backgroundColor": "rgba(255, 255, 255, 0.1)",
+                "border": "1px solid var(--primary)",
+                "transform": { "translateZ": 0 }
+            },
+            "logic": {
+                "extrude": 80,
+                "autoAnimate": { "rotateY": 0.5 },
+                "particles": { "count": 50, "size": 3, "color": "var(--primary)" }
+            }
+        },
+        {
+            "id": "reactive_cloud",
+            "logic": {
+                "instancias": {
+                    "cantidad": 30,
+                    "spread": { "x": 1200, "y": 800, "z": 600 }
+                }
+            },
+            "props": {
+                "width": "40px", "height": "40px",
+                "backgroundColor": "rgba(255, 255, 255, 0.05)",
+                "border": "1px solid #444",
+                "borderRadius": "50%"
+            },
+            "logic": {
+                "reactive": { "multiplier": 0.8 },
+                "float": { "amplitude": 30, "speed": 1 }
+            }
+        },
+        {
+            "id": "kinetic_list",
+            "props": {
+                "width": "300px", "height": "500px",
+                "transform": { "translateX": 400, "translateZ": 100 }
+            },
+            "logic": { "kineticScroll": true },
+            "children": [
+                {
+                    "id": "list_item",
+                    "template": "card",
+                    "logic": {
+                        "instancias": {
+                            "cantidad": 10,
+                            "spread": { "x": 0, "y": 1500, "z": 0 }
+                        }
+                    },
+                    "children": [
+                        { "id": "t", "props": { "innerHTML": "ZENITH DATA" } }
+                    ]
+                }
+            ]
+        }
+    ]
+}

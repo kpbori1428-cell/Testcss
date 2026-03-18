@@ -101,6 +101,7 @@ export class RenderNode {
     }
 
     applyBaseStyles() {
+        if (!this.data.props) return;
         for (const [key, value] of Object.entries(this.data.props)) {
             if (key.startsWith('--')) {
                 this.element.style.setProperty(key, value);
@@ -126,10 +127,13 @@ export class RenderNode {
 
     applyTransform() {
         const t = this.currentTransform;
-        // Optimización: Usar variables CSS para que el navegador solo recomponga si cambian
-        // pero aquí las aplicamos directamente para control total del orden
         const str = `translate3d(${t.translateX}px, ${t.translateY}px, ${t.translateZ}px) rotateY(${t.rotateY}deg) rotateX(${t.rotateX}deg) rotateZ(${t.rotateZ}deg) scale(${t.scale})`;
-        this.element.style.transform = str;
+
+        // Dirty Flag check: Solo actualizar el DOM si el string cambió
+        if (this.lastTransformStr !== str) {
+            this.element.style.transform = str;
+            this.lastTransformStr = str;
+        }
     }
 
     patch(partialData) {

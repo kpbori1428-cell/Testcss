@@ -19,12 +19,12 @@
             await engine.init('app');
             await engine.loadTemplates('templates.json');
 
-            // Load Volumetric Demo by default
-            await engine.loadAndMount('volumetric_demo.json');
-            engine.applyTheme('solar');
+            // Load Zenith Demo for maximum impact
+            await engine.loadAndMount('zenith_demo.json');
+            engine.applyTheme('ocean');
 
-            // Switch after 8s for variety
-            setTimeout(() => engine.transitionTo('data.json'), 8000);
+            // Switch after 12s
+            setTimeout(() => engine.transitionTo('volumetric_demo.json'), 12000);
         });
     </script>
 </body>

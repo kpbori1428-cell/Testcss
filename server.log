@@ -1,1 +1,5 @@
+
+> motor-v4@1.0.0 start
+> node server.js
+
 Test server running at http://localhost:3000

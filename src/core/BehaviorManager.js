@@ -2,6 +2,7 @@ import { MathUtils } from '../math/MathUtils.js';
 import { inputManager } from '../events/InputManager.js';
 import { telemetry } from '../events/TelemetryBus.js';
 import { formulaParser } from '../math/FormulaParser.js';
+import { influenceManager } from './InfluenceManager.js';
 
 export class BehaviorManager {
     constructor(renderNode) {
@@ -26,6 +27,8 @@ export class BehaviorManager {
         if (this.logic.spring) this.setupSpring(this.logic.spring);
         if (this.logic.float) this.setupFloat(this.logic.float);
         if (this.logic.parallax) this.setupParallax(this.logic.parallax);
+        if (this.logic.reactive) this.setupReactive(this.logic.reactive);
+        if (this.logic.kineticScroll) this.setupKineticScroll(this.logic.kineticScroll);
         if (this.logic.actions) this.setupActions(this.logic.actions);
 
         this.initialized = true;
@@ -83,6 +86,25 @@ export class BehaviorManager {
     setupFloat(config) {
         // config = { amplitude: 20, speed: 1.5 }
         this.renderNode.wakeUp();
+    }
+
+    setupReactive(config) {
+        // config = { multiplier: 1 }
+        this.renderNode.wakeUp();
+    }
+
+    setupKineticScroll(config) {
+        // JS-driven kinetic scroll logic
+        this.scrollPos = 0;
+        this.scrollVelocity = 0;
+        const handler = (e) => {
+            if (!this.renderNode || !this.renderNode.mounted) return;
+            this.renderNode.wakeUp();
+            this.scrollVelocity += e.deltaY * 0.1;
+        };
+        if (this.renderNode.element) {
+            this.renderNode.element.addEventListener('wheel', handler, { passive: false });
+        }
     }
 
     setupParallax(config) {
@@ -170,6 +192,31 @@ export class BehaviorManager {
         this.time += deltaTime;
         let isMoving = false;
 
+        const bt = (this.renderNode.data && this.renderNode.data.baseTransform) || {};
+        const target = this.renderNode.targetTransform;
+        const current = this.renderNode.currentTransform;
+
+        // Process Reactive Influence
+        if (this.logic.reactive) {
+            const influence = influenceManager.getInfluenceAt(current.translateX, current.translateY, current.translateZ);
+            if (influence.intensity > 0) {
+                const mult = this.logic.reactive.multiplier || 1;
+                target.translateX = (bt.translateX || 0) + influence.vx * mult;
+                target.translateY = (bt.translateY || 0) + influence.vy * mult;
+                target.translateZ = (bt.translateZ || 0) + influence.vz * mult;
+                this.renderNode.wakeUp();
+                isMoving = true;
+            }
+        }
+
+        // Process Kinetic Scroll
+        if (this.logic.kineticScroll && this.scrollPos !== undefined) {
+            this.scrollVelocity *= 0.95; // Friction
+            this.scrollPos += this.scrollVelocity;
+            target.translateY = (bt.translateY || 0) - this.scrollPos;
+            if (Math.abs(this.scrollVelocity) > 0.1) isMoving = true;
+        }
+
         // Process Spring Physics
         if (this.logic.spring && this.springState) {
             const config = this.logic.spring;
@@ -200,9 +247,6 @@ export class BehaviorManager {
             }
         }
 
-        const bt = (this.renderNode.data && this.renderNode.data.baseTransform) || {};
-        const target = this.renderNode.targetTransform;
-        const current = this.renderNode.currentTransform;
 
         if (!target || !current) return false;
 

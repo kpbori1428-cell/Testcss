@@ -51,10 +51,16 @@ export class NodeFactory {
             this.generateExtrusion(node, data.logic.extrude);
         }
 
+        // Particle System logic
+        if (data.logic && data.logic.particles) {
+            this.generateParticles(node, data.logic.particles);
+        }
+
         return node;
     }
 
     generateExtrusion(node, depthValue) {
+        if (!node.props) return;
         const w = parseInt(node.props.width) || 100;
         const h = parseInt(node.props.height) || 100;
         const d = parseInt(depthValue) || 100;
@@ -87,6 +93,38 @@ export class NodeFactory {
             node.childrenData.push(faceNode);
             this.nodes.set(faceNode.path, faceNode);
         });
+    }
+
+    generateParticles(node, config) {
+        const count = config.count || 20;
+        for (let i = 0; i < count; i++) {
+            const particleData = {
+                id: `${node.id}_p${i}`,
+                props: {
+                    width: (config.size || 5) + 'px',
+                    height: (config.size || 5) + 'px',
+                    backgroundColor: config.color || '#fff',
+                    borderRadius: '50%',
+                    opacity: 0.5
+                },
+                logic: {
+                    autoAnimate: {
+                        rotateX: Math.random() * 2,
+                        rotateY: Math.random() * 2,
+                        floatAmplitude: 50 + Math.random() * 50,
+                        floatFrequency: 0.5 + Math.random()
+                    }
+                },
+                baseTransform: {
+                    translateX: (Math.random() - 0.5) * 500,
+                    translateY: (Math.random() - 0.5) * 500,
+                    translateZ: (Math.random() - 0.5) * 500
+                }
+            };
+            const pNode = new NodeInterface(particleData, node.path);
+            node.childrenData.push(pNode);
+            this.nodes.set(pNode.path, pNode);
+        }
     }
 
     createInstances(data, parentPath, depth) {
