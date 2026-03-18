@@ -484,7 +484,12 @@
                                         "background": "rgba(255,255,255,0.2)",
                                         "borderRadius": "15px",
                                         "marginBottom": "20px",
-                                        "position": "relative"
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "flex-end",
+                                        "alignItems": "center",
+                                        "padding": "0 20px",
+                                        "boxSizing": "border-box"
                                     },
                                     "Transform_Base": {
                                         "x": 0,
@@ -494,7 +499,18 @@
                                         "ry": 0,
                                         "rz": 0,
                                         "scale": 1
-                                    }
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "texto_pantalla",
+                                            "Propiedades_Esteticas": {
+                                                "color": "white",
+                                                "fontSize": "36px",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "innerHTML": "0"
+                                        }
+                                    ]
                                 },
                                 {
                                     "id": "teclado_calculadora",
@@ -518,14 +534,21 @@
                                     },
                                     "Hijos": [
                                         {
-                                            "id": "boton_calc",
-                                            "Instancias": 12,
+                                            "id": "btn_7",
+                                            "App_Logic": "CalcButton",
                                             "Propiedades_Esteticas": {
-                                                "width": "60px",
-                                                "height": "60px",
+                                                "width": "50px",
+                                                "height": "50px",
                                                 "background": "rgba(255,255,255,0.4)",
-                                                "borderRadius": "30px",
-                                                "position": "relative"
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
                                             },
                                             "Transform_Base": {
                                                 "x": 0,
@@ -535,11 +558,433 @@
                                                 "ry": 0,
                                                 "rz": 0,
                                                 "scale": 1
-                                            }
+                                            },
+                                            "innerHTML": "7"
+                                        },
+                                        {
+                                            "id": "btn_8",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "8"
+                                        },
+                                        {
+                                            "id": "btn_9",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "9"
+                                        },
+                                        {
+                                            "id": "btn_div",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,165,0,0.8)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "/"
+                                        },
+                                        {
+                                            "id": "btn_4",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "4"
+                                        },
+                                        {
+                                            "id": "btn_5",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "5"
+                                        },
+                                        {
+                                            "id": "btn_6",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "6"
+                                        },
+                                        {
+                                            "id": "btn_mul",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,165,0,0.8)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "*"
+                                        },
+                                        {
+                                            "id": "btn_1",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "1"
+                                        },
+                                        {
+                                            "id": "btn_2",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "2"
+                                        },
+                                        {
+                                            "id": "btn_3",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "3"
+                                        },
+                                        {
+                                            "id": "btn_sub",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,165,0,0.8)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "-"
+                                        },
+                                        {
+                                            "id": "btn_C",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,0,0,0.6)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "C"
+                                        },
+                                        {
+                                            "id": "btn_0",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,255,255,0.4)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "0"
+                                        },
+                                        {
+                                            "id": "btn_eq",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,165,0,0.8)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "="
+                                        },
+                                        {
+                                            "id": "btn_add",
+                                            "App_Logic": "CalcButton",
+                                            "Propiedades_Esteticas": {
+                                                "width": "50px",
+                                                "height": "50px",
+                                                "background": "rgba(255,165,0,0.8)",
+                                                "borderRadius": "25px",
+                                                "position": "relative",
+                                                "display": "flex",
+                                                "justifyContent": "center",
+                                                "alignItems": "center",
+                                                "color": "white",
+                                                "fontSize": "20px",
+                                                "fontWeight": "bold",
+                                                "fontFamily": "sans-serif"
+                                            },
+                                            "Transform_Base": {
+                                                "x": 0,
+                                                "y": 0,
+                                                "z": 2,
+                                                "rx": 0,
+                                                "ry": 0,
+                                                "rz": 0,
+                                                "scale": 1
+                                            },
+                                            "innerHTML": "+"
                                         }
                                     ]
                                 }
-                            ]
+                            ],
+                            "App_Logic": "Calculadora"
                         },
                         {
                             "id": "app_view_galeria",
@@ -589,7 +1034,8 @@
                                         "scale": 1
                                     }
                                 }
-                            ]
+                            ],
+                            "App_Logic": "Galeria"
                         },
                         {
                             "id": "app_view_mapa",

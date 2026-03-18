@@ -99,6 +99,11 @@ export const EngineTicker = {
 export class RenderNode {
     static globalZCounter = 0;
     static registry = new Map(); // Registro de Nodos para Telemetría/Acciones
+    static appRegistry = new Map(); // Registro Global de Controladores de Aplicaciones
+
+    static registerAppLogic(name, logicClass) {
+        RenderNode.appRegistry.set(name, logicClass);
+    }
 
     constructor(data, parentDOM, path = "", level = 0, zIndex = 0) {
         if (level > 32) {
@@ -117,6 +122,8 @@ export class RenderNode {
         this.propiedadesEsteticas = data.Propiedades_Esteticas || {};
         this.directivasLogicas = data.Directivas_Logicas || {};
         this.acciones = data.Acciones || {}; // Manejo de Acciones
+        this.appLogicName = data.App_Logic || null; // Controlador de aplicación
+        this.appLogicInstance = null;
         this.transformBase = data.Transform_Base || { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, scale: 1 };
         this.hijosDatos = data.Hijos || [];
         this.innerHTML = data.innerHTML || "";
@@ -175,12 +182,13 @@ export class RenderNode {
 
         // Manejo Inteligente de Pointer Events (Data-Driven Architecture Fix)
         // Por defecto, las capas CSS 3D absorben clics, haciendo el DOM inoperable por debajo ("vidrio").
-        // Solo habilitamos punteros en nodos que tengan: acciones, background, border, texto o box-shadow.
+        // Solo habilitamos punteros en nodos que tengan: acciones, appLogic, background, border, texto o box-shadow.
         const pE = this.propiedadesEsteticas;
         const hasVisuals = pE.background || pE.backgroundColor || pE.backgroundImage || pE.border || pE.boxShadow || pE.color || this.innerHTML;
         const hasActions = Object.keys(this.acciones).length > 0;
+        const hasAppLogic = this.appLogicName !== null;
 
-        if (hasActions || hasVisuals) {
+        if (hasActions || hasVisuals || hasAppLogic) {
             this.domElement.style.pointerEvents = 'auto';
         } else {
             this.domElement.style.pointerEvents = 'none';
@@ -188,12 +196,24 @@ export class RenderNode {
 
         this.parentDOM.appendChild(this.domElement);
 
+        // Instanciar Lógica de App si existe
+        if (this.appLogicName && RenderNode.appRegistry.has(this.appLogicName)) {
+            const LogicClass = RenderNode.appRegistry.get(this.appLogicName);
+            this.appLogicInstance = new LogicClass(this);
+            if (this.appLogicInstance.onMount) {
+                this.appLogicInstance.onMount();
+            }
+        }
+
         // Registrar Eventos (Acciones - Click)
-        if (hasActions) {
+        if (hasActions || (this.appLogicInstance && this.appLogicInstance.onClick)) {
             this.domElement.style.cursor = "pointer";
             this.domElement.addEventListener("click", (e) => {
                 e.stopPropagation();
-                this.ejecutarAcciones();
+                if (hasActions) this.ejecutarAcciones();
+                if (this.appLogicInstance && this.appLogicInstance.onClick) {
+                    this.appLogicInstance.onClick(e);
+                }
             });
         }
 
@@ -224,6 +244,10 @@ export class RenderNode {
 
     // Fase de Desmontaje (Unmount)
     unmount() {
+        if (this.appLogicInstance && this.appLogicInstance.onUnmount) {
+            this.appLogicInstance.onUnmount();
+        }
+
         // Contrato de Limpieza
         EngineTicker.unsubscribe(this.updateCallback);
         this.camaraMemoria = {}; // Vaciar Cámara de Memoria
@@ -452,8 +476,11 @@ function setupRestoreTriggers() {
     }, { passive: true });
 }
 
+import { registerAllApps } from './apps.js';
+
 export async function initEngine(jsonUrl) {
     try {
+        registerAllApps();
         const response = await fetch(jsonUrl);
         const data = await response.json();
 
