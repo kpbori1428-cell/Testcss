@@ -291,6 +291,32 @@ export class RenderNode {
         if (parche.Directivas_Logicas) {
             Fusionar(this.directivasLogicas, parche.Directivas_Logicas);
         }
+        if (parche.Hijos) {
+            // Desmontar hijos actuales
+            this.children.forEach(child => child.unmount());
+            this.children = [];
+
+            // Reemplazar datos de hijos
+            this.hijosDatos = parche.Hijos;
+
+            // Montar nuevos hijos
+            this.hijosDatos.forEach((hijoData, index) => {
+                // Manejo de regla de instancias (clonación procedimental con sufijo)
+                if (hijoData.Instancias) {
+                    for (let i = 0; i < hijoData.Instancias; i++) {
+                        const instData = { ...hijoData, id: `${hijoData.id}:ins[${i}]` };
+                        delete instData.Instancias; // Evitar loop infinito
+                        const childNode = new RenderNode(instData, this.domElement, this.path, this.level + 1, index + i);
+                        childNode.mount();
+                        this.children.push(childNode);
+                    }
+                } else {
+                    const childNode = new RenderNode(hijoData, this.domElement, this.path, this.level + 1, index);
+                    childNode.mount();
+                    this.children.push(childNode);
+                }
+            });
+        }
     }
 
     // A. Gestión de Cámara de Memoria

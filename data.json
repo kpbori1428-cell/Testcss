@@ -1,5 +1,5 @@
 {
-    "id": "escena_principal",
+    "id": "escena_telefono",
     "Propiedades_Esteticas": {
         "width": "100%",
         "height": "100%",
@@ -8,75 +8,586 @@
         "alignItems": "center"
     },
     "Directivas_Logicas": {
-        "mouse-follow": "20"
+        "look-at-mouse": "15"
     },
-    "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": 0, "ry": 0, "rz": 0, "scale": 1 },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": -300,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
     "Hijos": [
         {
-            "id": "cubo_3d",
+            "id": "cuerpo_telefono",
             "Propiedades_Esteticas": {
-                "width": "200px",
-                "height": "200px",
-                "transformStyle": "preserve-3d"
+                "width": "320px",
+                "height": "650px",
+                "background": "#1e1e1e",
+                "borderRadius": "40px",
+                "boxShadow": "0 20px 50px rgba(0,0,0,0.8), inset 0 0 0 4px #444, inset 0 0 0 8px #000",
+                "position": "relative",
+                "display": "flex",
+                "flexDirection": "column",
+                "alignItems": "center",
+                "padding": "15px",
+                "boxSizing": "border-box"
             },
             "Directivas_Logicas": {
-                "look-at-mouse": "90"
+                "mouse-follow": "30"
             },
-            "Transform_Base": { "x": 0, "y": 0, "z": 0, "rx": -30, "ry": 45, "rz": 0, "scale": 1 },
+            "Transform_Base": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "rx": 0,
+                "ry": 0,
+                "rz": 0,
+                "scale": 1
+            },
             "Hijos": [
                 {
-                    "id": "front",
+                    "id": "notch",
                     "Propiedades_Esteticas": {
-                        "position": "absolute", "width": "200px", "height": "200px",
-                        "background": "rgba(255, 0, 204, 0.7)", "border": "2px solid #fff",
-                        "display": "flex", "justifyContent": "center", "alignItems": "center", "fontSize": "24px", "color": "white"
+                        "width": "120px",
+                        "height": "25px",
+                        "background": "#000",
+                        "borderRadius": "0 0 15px 15px",
+                        "position": "absolute",
+                        "top": "15px",
+                        "zIndex": "10"
                     },
-                    "Transform_Base": { "x": 0, "y": 0, "z": 100, "rx": 0, "ry": 0, "rz": 0, "scale": 1 }
+                    "Transform_Base": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 2,
+                        "rx": 0,
+                        "ry": 0,
+                        "rz": 0,
+                        "scale": 1
+                    }
                 },
                 {
-                    "id": "back",
+                    "id": "pantalla_telefono",
                     "Propiedades_Esteticas": {
-                        "position": "absolute", "width": "200px", "height": "200px",
-                        "background": "rgba(51, 51, 255, 0.7)", "border": "2px solid #fff",
-                        "display": "flex", "justifyContent": "center", "alignItems": "center", "fontSize": "24px", "color": "white"
+                        "width": "100%",
+                        "height": "100%",
+                        "background": "linear-gradient(135deg, #1cb5e0 0%, #000851 100%)",
+                        "borderRadius": "30px",
+                        "overflow": "hidden",
+                        "position": "relative",
+                        "display": "flex",
+                        "flexDirection": "column"
                     },
-                    "Transform_Base": { "x": 0, "y": 0, "z": -100, "rx": 0, "ry": 180, "rz": 0, "scale": 1 }
-                },
-                {
-                    "id": "right",
-                    "Propiedades_Esteticas": {
-                        "position": "absolute", "width": "200px", "height": "200px",
-                        "background": "rgba(0, 255, 0, 0.7)", "border": "2px solid #fff",
-                        "display": "flex", "justifyContent": "center", "alignItems": "center", "fontSize": "24px", "color": "white"
+                    "Transform_Base": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1,
+                        "rx": 0,
+                        "ry": 0,
+                        "rz": 0,
+                        "scale": 1
                     },
-                    "Transform_Base": { "x": 100, "y": 0, "z": 0, "rx": 0, "ry": 90, "rz": 0, "scale": 1 }
-                },
-                {
-                    "id": "left",
-                    "Propiedades_Esteticas": {
-                        "position": "absolute", "width": "200px", "height": "200px",
-                        "background": "rgba(255, 255, 0, 0.7)", "border": "2px solid #fff",
-                        "display": "flex", "justifyContent": "center", "alignItems": "center", "fontSize": "24px", "color": "white"
-                    },
-                    "Transform_Base": { "x": -100, "y": 0, "z": 0, "rx": 0, "ry": -90, "rz": 0, "scale": 1 }
-                },
-                {
-                    "id": "top",
-                    "Propiedades_Esteticas": {
-                        "position": "absolute", "width": "200px", "height": "200px",
-                        "background": "rgba(0, 255, 255, 0.7)", "border": "2px solid #fff",
-                        "display": "flex", "justifyContent": "center", "alignItems": "center", "fontSize": "24px", "color": "white"
-                    },
-                    "Transform_Base": { "x": 0, "y": -100, "z": 0, "rx": 90, "ry": 0, "rz": 0, "scale": 1 }
-                },
-                {
-                    "id": "bottom",
-                    "Propiedades_Esteticas": {
-                        "position": "absolute", "width": "200px", "height": "200px",
-                        "background": "rgba(255, 0, 0, 0.7)", "border": "2px solid #fff",
-                        "display": "flex", "justifyContent": "center", "alignItems": "center", "fontSize": "24px", "color": "white"
-                    },
-                    "Transform_Base": { "x": 0, "y": 100, "z": 0, "rx": -90, "ry": 0, "rz": 0, "scale": 1 }
+                    "Hijos": [
+                        {
+                            "id": "barra_estado",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "height": "30px",
+                                "display": "flex",
+                                "justifyContent": "space-between",
+                                "alignItems": "center",
+                                "padding": "0 20px",
+                                "boxSizing": "border-box",
+                                "color": "#fff",
+                                "fontSize": "12px",
+                                "fontFamily": "sans-serif",
+                                "fontWeight": "bold"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 0,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            }
+                        },
+                        {
+                            "id": "reloj_widget",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "marginTop": "40px",
+                                "textAlign": "center",
+                                "color": "white",
+                                "fontSize": "48px",
+                                "fontFamily": "sans-serif",
+                                "fontWeight": "300",
+                                "position": "relative"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 10,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            }
+                        },
+                        {
+                            "id": "rejilla_apps",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "flex": "1",
+                                "display": "flex",
+                                "flexWrap": "wrap",
+                                "justifyContent": "space-around",
+                                "alignContent": "flex-start",
+                                "padding": "20px",
+                                "boxSizing": "border-box",
+                                "gap": "15px"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 5,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            },
+                            "Hijos": [
+                                {
+                                    "id": "app_calculadora",
+                                    "app_json": "app_view_calculadora.json",
+                                    "App_Logic": "AppLauncher",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "color": "#d63384",
+                                        "fontSize": "24px",
+                                        "fontWeight": "bold",
+                                        "fontFamily": "sans-serif"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-5"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt",
+                                            "Propiedades_Esteticas": {
+                                                "display": "block",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "+-"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "app_galeria",
+                                    "App_Logic": "AppLauncher",
+                                    "app_json": "app_view_galeria.json",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-5"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_galeria",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "24px",
+                                                "margin": "10px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\uddbc\ufe0f"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "app_ajustes",
+                                    "App_Logic": "AppLauncher",
+                                    "app_json": "app_view_ajustes.json",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #434343 0%, #000000 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-5"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_ajustes",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "24px",
+                                                "margin": "10px",
+                                                "position": "relative",
+                                                "pointerEvents": "none"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\u2699"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "app_mapa",
+                                    "App_Logic": "AppLauncher",
+                                    "app_json": "app_view_mapa.json",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-5"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_mapa",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#00695c",
+                                                "fontSize": "24px",
+                                                "margin": "10px",
+                                                "position": "relative",
+                                                "pointerEvents": "none"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\udccd"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "app_navegador",
+                                    "App_Logic": "AppLauncher",
+                                    "app_json": "app_view_navegador.json",
+                                    "Propiedades_Esteticas": {
+                                        "width": "55px",
+                                        "height": "55px",
+                                        "background": "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+                                        "borderRadius": "15px",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+                                        "position": "relative",
+                                        "border": "1px solid rgba(255,255,255,0.4)",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-5"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_nav",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#283593",
+                                                "fontSize": "24px",
+                                                "margin": "10px",
+                                                "position": "relative",
+                                                "pointerEvents": "none"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83c\udf10"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "dock_apps",
+                            "Propiedades_Esteticas": {
+                                "width": "90%",
+                                "height": "80px",
+                                "background": "rgba(255, 255, 255, 0.2)",
+                                "borderRadius": "25px",
+                                "margin": "0 auto 10px auto",
+                                "backdropFilter": "blur(15px)",
+                                "display": "flex",
+                                "justifyContent": "space-around",
+                                "alignItems": "center",
+                                "padding": "0 10px",
+                                "boxSizing": "border-box",
+                                "position": "absolute",
+                                "bottom": "15px",
+                                "left": "5%"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 10,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            },
+                            "Hijos": [
+                                {
+                                    "id": "dock_telefono",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #0ba360 0%, #3cba92 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_tel",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\udcde"
+                                        }
+                                    ],
+                                    "App_Logic": "AppLauncher",
+                                    "app_json": "app_view_telefono.json"
+                                },
+                                {
+                                    "id": "dock_mensajes",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #38f9d7 0%, #43e97b 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_msj",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\udcac"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "dock_correo",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_mail",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\udce7"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "dock_musica",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_musica",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83c\udfb5"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "home_button",
+                            "Propiedades_Esteticas": {
+                                "width": "100px",
+                                "height": "5px",
+                                "background": "rgba(255,255,255,0.6)",
+                                "borderRadius": "5px",
+                                "position": "absolute",
+                                "bottom": "10px",
+                                "left": "50%",
+                                "transform": "translateX(-50%)",
+                                "cursor": "pointer",
+                                "zIndex": "100"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 20,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            },
+                            "App_Logic": "HomeButton"
+                        }
+                    ]
                 }
             ]
         }
