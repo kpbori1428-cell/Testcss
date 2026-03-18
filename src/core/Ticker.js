@@ -1,11 +1,21 @@
+import { MathUtils } from '../math/MathUtils.js';
+
 export class Ticker {
     constructor() {
-        if (Ticker.instance) return Ticker.instance;
+        if (Ticker.instance) {
+            return Ticker.instance;
+        }
+
         this.isRunning = false;
         this.lastTime = 0;
-        this.elapsedTime = 0;
+        this.deltaTime = 0;
+
+        // Set of nodes that need updates
         this.activeNodes = new Set();
-        this.callbacks = new Set();
+
+        // Optional global update callbacks
+        this.updateCallbacks = new Set();
+
         Ticker.instance = this;
     }
 
@@ -23,21 +33,25 @@ export class Ticker {
     _tick(currentTime) {
         if (!this.isRunning) return;
 
-        // Calculate delta time in seconds, capped to avoid large jumps
-        const deltaTime = Math.min((currentTime - this.lastTime) / 1000, 0.1);
+        // Calculate DeltaTime in seconds
+        this.deltaTime = (currentTime - this.lastTime) / 1000;
+
+        // Prevent huge jumps if the tab was inactive (cap at 0.1s)
+        if (this.deltaTime > 0.1) {
+            this.deltaTime = 0.016; // Assume ~60fps
+        }
+
         this.lastTime = currentTime;
-        this.elapsedTime += deltaTime;
 
         // Execute global callbacks
-        this.callbacks.forEach(callback => callback(deltaTime));
+        for (const callback of this.updateCallbacks) {
+            callback(this.deltaTime);
+        }
 
-        // Update nodes and remove those that report being asleep
-        this.activeNodes.forEach(node => {
-            const isStillAwake = node.update(deltaTime);
-            if (!isStillAwake) {
-                this.activeNodes.delete(node);
-            }
-        });
+        // Process node updates
+        for (const node of this.activeNodes) {
+            this._updateNode(node);
+        }
 
         requestAnimationFrame((time) => this._tick(time));
     }
@@ -51,11 +65,24 @@ export class Ticker {
     }
 
     addCallback(callback) {
-        this.callbacks.add(callback);
+        this.updateCallbacks.add(callback);
     }
 
     removeCallback(callback) {
-        this.callbacks.delete(callback);
+        this.updateCallbacks.delete(callback);
+    }
+
+    _updateNode(node) {
+        // Placeholder for node update logic.
+        // This is where we will apply Lerp and Logical Culling.
+        // The Renderer will hook into this.
+        if (node.update) {
+            const isAwake = node.update(this.deltaTime);
+            if (!isAwake) {
+                // Logical Culling: Sleep Mode
+                this.removeNode(node);
+            }
+        }
     }
 }
 

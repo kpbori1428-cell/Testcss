@@ -3,33 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motor V4 - Background Demo</title>
+    <title>Motor V4 - Spatial Engine</title>
     <style>
-        body, html { margin: 0; padding: 0; overflow: hidden; background: #111; color: white; font-family: sans-serif; height: 100vh; perspective: 1000px; }
-        #app { width: 100vw; height: 100vh; position: relative; transform-style: preserve-3d; transition: opacity 0.5s; }
-        div { position: absolute; box-sizing: border-box; }
-        #ui { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; gap: 10px; }
-        button { background: rgba(255,255,255,0.1); border: 1px solid white; color: white; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
-        button:hover { background: rgba(255,255,255,0.2); }
+        body, html { margin: 0; padding: 0; overflow: hidden; background: #000; color: white; font-family: 'Inter', sans-serif; height: 100vh; perspective: 1000px; }
+        #app { width: 100vw; height: 100vh; position: relative; transform-style: preserve-3d; }
+        div { position: absolute; }
     </style>
 </head>
 <body>
     <div id="app"></div>
-    <div id="ui">
-        <button onclick="engine.transitionTo('./data.json')">Volume</button>
-        <button onclick="engine.transitionTo('./math_demo.json')">Math</button>
-        <button onclick="engine.transitionTo('./background_demo.json')">Background</button>
-    </div>
     <script type="module">
         import { engine } from './src/core/Engine.js';
-        import { telemetry } from './src/events/TelemetryBus.js';
-        window.engine = engine;
+
         document.addEventListener('DOMContentLoaded', async () => {
             await engine.init('app');
-            telemetry.subscribe('scene:transition:start', () => document.getElementById('app').style.opacity = '0');
-            telemetry.subscribe('scene:transition:complete', () => document.getElementById('app').style.opacity = '1');
-            await engine.loadTemplates('./templates.json');
-            await engine.loadAndMount('./background_demo.json');
+            await engine.loadTemplates('templates.json');
+            await engine.loadAndMount('data.json');
+
+            // Example of transition after 10s
+            // setTimeout(() => engine.transitionTo('scene2.json'), 10000);
         });
     </script>
 </body>

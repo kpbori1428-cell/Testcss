@@ -1,33 +1,29 @@
-import { renderer } from '../render/Renderer.js';
 import { DataLoader } from '../loaders/DataLoader.js';
-import { telemetry } from '../events/TelemetryBus.js';
+import { renderer } from '../render/Renderer.js';
 
-export class SceneManager {
+class SceneManager {
     constructor() {
         this.loader = new DataLoader();
-        this.currentUrl = null;
-        this.isBusy = false;
+        this.currentSceneUrl = null;
     }
 
     async transitionTo(url) {
-        if (this.isBusy || this.currentUrl === url) return;
-        this.isBusy = true;
+        console.log(`[SceneManager] Transicionando a: ${url}`);
 
-        telemetry.publish('scene:transition:start', { to: url });
+        // 1. Limpieza de escena actual
+        renderer.dispose();
 
+        // 2. Carga de nueva escena
         try {
             const data = await this.loader.load(url);
-            await new Promise(resolve => requestAnimationFrame(resolve));
+            this.currentSceneUrl = url;
 
-            renderer.dispose();
-            await renderer.mount(data);
-
-            this.currentUrl = url;
-            telemetry.publish('scene:transition:complete', { url });
+            // 3. Montar nueva escena
+            renderer.mount(data);
+            return true;
         } catch (error) {
-            console.error("[SceneManager] Transition error:", error);
-        } finally {
-            this.isBusy = false;
+            console.error(`[SceneManager] Error en la transición:`, error);
+            return false;
         }
     }
 }

@@ -1,41 +1,57 @@
 export class FormulaParser {
-    static cache = new Map();
+    constructor() {
+        this.cache = new Map();
+    }
 
-    static evaluate(formula, variables = {}) {
+    /**
+     * Compila una fórmula en una función ejecutable.
+     * Soporta variables: time, index, total, mouseX, mouseY.
+     * Ejemplo: "=sin(time + index) * 100"
+     */
+    compile(formula) {
         if (typeof formula !== 'string' || !formula.startsWith('=')) {
-            return formula;
+            return null;
         }
 
-        let compiledFn = this.cache.get(formula);
+        if (this.cache.has(formula)) {
+            return this.cache.get(formula);
+        }
 
-        if (!compiledFn) {
-            const expression = formula.substring(1)
-                .replace(/sin\(/g, 'Math.sin(')
-                .replace(/cos\(/g, 'Math.cos(')
-                .replace(/tan\(/g, 'Math.tan(')
-                .replace(/abs\(/g, 'Math.abs(')
-                .replace(/random\(\)/g, 'Math.random()')
-                .replace(/\bPI\b/g, 'Math.PI');
+        const body = formula.substring(1);
 
+        // Sanitización básica: permitir solo caracteres matemáticos y variables conocidas
+        const sanitized = body.replace(/[^a-zA-Z0-9\s\+\-\*\/\(\)\.,]/g, '');
+
+        try {
+            // Reemplazar funciones matemáticas estándar por Math.func
+            const finalBody = sanitized
+                .replace(/\b(sin|cos|tan|abs|sqrt|pow|min|max|PI|E)\b/g, 'Math.$1')
+                .replace(/\b(index)\b/g, 'args.index')
+                .replace(/\b(total)\b/g, 'args.total')
+                .replace(/\b(time)\b/g, 'args.time')
+                .replace(/\b(mouseX)\b/g, 'args.mouseX')
+                .replace(/\b(mouseY)\b/g, 'args.mouseY');
+
+            const fn = new Function('args', `return ${finalBody};`);
+            this.cache.set(formula, fn);
+            return fn;
+        } catch (error) {
+            console.error(`[FormulaParser] Error al compilar fórmula: ${formula}`, error);
+            return null;
+        }
+    }
+
+    evaluate(formula, args) {
+        const fn = this.compile(formula);
+        if (fn) {
             try {
-                compiledFn = new Function('time', 'index', 'total', 'mouseX', 'mouseY', `return ${expression};`);
-                this.cache.set(formula, compiledFn);
-            } catch (error) {
-                console.error(`[FormulaParser] Invalid formula: ${formula}`, error);
+                return fn(args);
+            } catch (e) {
                 return 0;
             }
         }
-
-        const { time = 0, index = 0, total = 1, mouseX = 0, mouseY = 0 } = variables;
-
-        try {
-            return compiledFn(time, index, total, mouseX, mouseY);
-        } catch (error) {
-            return 0;
-        }
-    }
-
-    static isFormula(value) {
-        return typeof value === 'string' && value.startsWith('=');
+        return 0;
     }
 }
+
+export const formulaParser = new FormulaParser();

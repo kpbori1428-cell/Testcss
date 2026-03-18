@@ -4,123 +4,127 @@ import { NodeInterface } from './NodeInterface.js';
 export class NodeFactory {
     constructor() {
         this.nodes = new Map();
-        this.templateRegistry = new Map();
+        this.templates = new Map();
     }
 
     registerTemplates(templates) {
-        Object.entries(templates).forEach(([id, data]) => {
-            this.templateRegistry.set(id, data);
-        });
+        for (const [key, value] of Object.entries(templates)) {
+            this.templates.set(key, value);
+        }
     }
 
-    async createNode(data, parentPath = 'app', depth = 0) {
-        if (depth > 32) throw new Error("[NodeFactory] Hierarchy depth limit exceeded (32)");
-
-        // 1. Process templates
-        let nodeData = data;
-        if (data.template && this.templateRegistry.has(data.template)) {
-            const template = this.templateRegistry.get(data.template);
-            nodeData = fusionar(template, data);
+    createNode(data, parentPath = 'app', depth = 0) {
+        if (depth > 32) {
+            throw new Error(`[NodeFactory] Límite de profundidad (32) excedido en el nodo: ${data.id}`);
         }
 
-        // 2. Handle procedural instances
-        if (nodeData.logic && nodeData.logic.instancias) {
-            return await this.createInstances(nodeData, parentPath, depth);
+        // Resolve templates
+        if (data.template && this.templates.has(data.template)) {
+            const templateData = this.templates.get(data.template);
+            data = fusionar(templateData, data);
         }
 
-        // 3. Instantiate Node
-        const node = new NodeInterface(nodeData, parentPath);
+        // Handle procedural instantiation logic
+        if (data.logic && data.logic.instancias) {
+            return this.createInstances(data, parentPath, depth);
+        }
+
+        const node = new NodeInterface(data, parentPath);
         this.nodes.set(node.path, node);
 
-        // 4. Process Children
-        if (nodeData.children && Array.isArray(nodeData.children)) {
-            node.childrenData = []; // Clear copied array from NodeInterface to populate with objects
-            for (const childConfig of nodeData.children) {
-                const childClone = fusionar({}, childConfig);
+        // Process children
+        if (data.children && Array.isArray(data.children)) {
+            data.children.forEach((childData) => {
+                const childNodes = this.createNode(childData, node.path, depth + 1);
 
-                // Propagate instance context to children
-                if (node.props['--instance-index'] !== undefined) {
-                    childClone.props = childClone.props || {};
-                    childClone.props['--instance-index'] = node.props['--instance-index'];
-                    childClone.props['--instance-total'] = node.props['--instance-total'];
-                }
-
-                const createdChild = await this.createNode(childClone, node.path, depth + 1);
-
-                if (Array.isArray(createdChild)) {
-                    node.childrenData.push(...createdChild);
+                // If createNode returns an array (from instances), add them all
+                if (Array.isArray(childNodes)) {
+                    node.childrenData.push(...childNodes);
                 } else {
-                    node.childrenData.push(createdChild);
+                    node.childrenData.push(childNodes);
                 }
-            }
-        }
-
-        // 5. Handle volumetric extrusion
-        if (nodeData.logic && nodeData.logic.extrude) {
-            this.generateExtrusion(node, nodeData.logic.extrude);
+            });
         }
 
         return node;
     }
 
-    generateExtrusion(node, depthValue) {
-        const depth = parseFloat(depthValue);
-        const width = parseFloat(node.props.width);
-        const height = parseFloat(node.props.height);
+    createInstances(data, parentPath, depth) {
+        const instConfig = data.logic.instancias;
+        const instancesCount = parseInt(instConfig.cantidad || instConfig, 10) || 1;
+        const generatedNodes = [];
 
-        const faces = [
-            { id: 'back', pos: { z: -depth }, rot: { y: 180 } },
-            { id: 'left', pos: { x: -width/2, z: -depth/2 }, rot: { y: -90 }, size: { w: depth, h: height } },
-            { id: 'right', pos: { x: width/2, z: -depth/2 }, rot: { y: 90 }, size: { w: depth, h: height } },
-            { id: 'top', pos: { y: -height/2, z: -depth/2 }, rot: { x: 90 }, size: { w: width, h: depth } },
-            { id: 'bottom', pos: { y: height/2, z: -depth/2 }, rot: { x: -90 }, size: { w: width, h: depth } }
-        ];
-
-        faces.forEach(faceConfig => {
-            const faceData = {
-                id: `${node.id}:${faceConfig.id}`,
-                props: fusionar({}, node.props),
-                logic: {}
-            };
-
-            if (faceConfig.size) {
-                faceData.props.width = `${faceConfig.size.w}px`;
-                faceData.props.height = `${faceConfig.size.h}px`;
-            }
-
-            faceData.baseTransform = {
-                translateX: faceConfig.pos.x || 0,
-                translateY: faceConfig.pos.y || 0,
-                translateZ: faceConfig.pos.z || 0,
-                rotateX: faceConfig.rot.x || 0,
-                rotateY: faceConfig.rot.y || 0,
-                rotateZ: faceConfig.rot.z || 0,
-                scale: 1
-            };
-
-            const faceNode = new NodeInterface(faceData, node.path);
-            this.nodes.set(faceNode.path, faceNode);
-            node.childrenData.push(faceNode);
-        });
-    }
-
-    async createInstances(data, parentPath, depth) {
-        const instancesCount = parseInt(data.logic.instancias);
-        const results = [];
-        const baseConfig = fusionar({}, data);
-        delete baseConfig.logic.instancias;
+        // Clone the base data, removing the 'instancias' property to avoid infinite loops
+        const baseData = fusionar({}, data);
+        delete baseData.logic.instancias;
 
         for (let i = 0; i < instancesCount; i++) {
-            const instanceConfig = fusionar({}, baseConfig);
-            instanceConfig.id = `${baseConfig.id}:ins[${i}]`;
-            instanceConfig.props = instanceConfig.props || {};
-            instanceConfig.props['--instance-index'] = i;
-            instanceConfig.props['--instance-total'] = instancesCount;
+            // Generate suffix :ins[n]
+            const instanceId = `${baseData.id}:ins[${i}]`;
 
-            const node = await this.createNode(instanceConfig, parentPath, depth);
-            if (Array.isArray(node)) results.push(...node);
-            else results.push(node);
+            const instanceData = fusionar({}, baseData);
+            instanceData.id = instanceId;
+
+            // Add custom props for instances (index, total) so logic can use them
+            if (!instanceData.props) instanceData.props = {};
+            instanceData.props['--instance-index'] = i;
+            instanceData.props['--instance-total'] = instancesCount;
+
+            // Procedural variations from data logic
+            if (!instanceData.baseTransform) {
+                instanceData.baseTransform = { translateX: 0, translateY: 0, translateZ: 0, rotateX: 0, rotateY: 0, rotateZ: 0, scale: 1 };
+            }
+
+            if (instConfig.spread) {
+                const sx = instConfig.spread.x || 0;
+                const sy = instConfig.spread.y || 0;
+                const sz = instConfig.spread.z || 0;
+                instanceData.baseTransform.translateX = (instanceData.baseTransform.translateX || 0) + (Math.random() - 0.5) * sx;
+                instanceData.baseTransform.translateY = (instanceData.baseTransform.translateY || 0) + (Math.random() - 0.5) * sy;
+                instanceData.baseTransform.translateZ = (instanceData.baseTransform.translateZ || 0) + (Math.random() - 0.5) * sz;
+            }
+
+            if (instConfig.rotate) {
+                instanceData.baseTransform.rotateX = (instanceData.baseTransform.rotateX || 0) + (Math.random() - 0.5) * (instConfig.rotate.x || 0);
+                instanceData.baseTransform.rotateY = (instanceData.baseTransform.rotateY || 0) + (Math.random() - 0.5) * (instConfig.rotate.y || 0);
+                instanceData.baseTransform.rotateZ = (instanceData.baseTransform.rotateZ || 0) + (Math.random() - 0.5) * (instConfig.rotate.z || 0);
+            }
+
+            if (instConfig.scale) {
+                const sMin = instConfig.scale.min || 1;
+                const sMax = instConfig.scale.max || 1;
+                instanceData.baseTransform.scale = (instanceData.baseTransform.scale || 1) * (sMin + Math.random() * (sMax - sMin));
+            }
+
+            const node = new NodeInterface(instanceData, parentPath);
+            this.nodes.set(node.path, node);
+
+            if (baseData.children && Array.isArray(baseData.children)) {
+                baseData.children.forEach(childData => {
+                     const childNodes = this.createNode(childData, node.path, depth + 1);
+                     if (Array.isArray(childNodes)) {
+                        node.childrenData.push(...childNodes);
+                     } else {
+                        node.childrenData.push(childNodes);
+                     }
+                });
+            }
+
+            generatedNodes.push(node);
         }
-        return results;
+
+        return generatedNodes;
+    }
+
+    getNode(path) {
+        return this.nodes.get(path);
+    }
+
+    getAllNodes() {
+        return Array.from(this.nodes.values());
+    }
+
+    clear() {
+        this.nodes.clear();
     }
 }

@@ -1,154 +1,146 @@
 import { fusionar } from '../core/DeepMerge.js';
 import { ticker } from '../core/Ticker.js';
-import { inputManager } from '../events/InputManager.js';
-import { FormulaParser } from '../math/FormulaParser.js';
-import { BehaviorManager } from '../core/BehaviorManager.js';
+import { telemetry } from '../events/TelemetryBus.js';
 
 export class RenderNode {
-    constructor(data, parentElement, depth, factory) {
-        this.data = data;
-        this.parentElement = parentElement;
-        this.depth = depth;
+    constructor(nodeData, parentElement, depth, factory) {
+        this.reset(nodeData, parentElement, depth);
         this.factory = factory;
-
-        this.currentTransform = { translateX:0, translateY:0, translateZ:0, rotateX:0, rotateY:0, rotateZ:0, scale:1 };
-        this.targetTransform = { ...this.currentTransform };
-        this.lastTransformString = "";
-        this.lastInnerHTML = "";
-        this.isAwake = false;
-        this.mounted = false;
-        this.formulaProps = new Map();
-
-        if (data.baseTransform) {
-            Object.assign(this.currentTransform, data.baseTransform);
-            Object.assign(this.targetTransform, data.baseTransform);
-        }
-
-        this.scanFormulas();
-        this.mount();
     }
 
-    reuse(data, parentElement, depth) {
-        this.unmount();
-        this.data = data;
+    reset(nodeData, parentElement, depth) {
+        this.data = nodeData;
         this.parentElement = parentElement;
         this.depth = depth;
-        this.formulaProps.clear();
-        this.lastTransformString = "";
-        this.lastInnerHTML = "";
 
-        Object.assign(this.currentTransform, { translateX:0, translateY:0, translateZ:0, rotateX:0, rotateY:0, rotateZ:0, scale:1 });
-        if (data.baseTransform) Object.assign(this.currentTransform, data.baseTransform);
-        Object.assign(this.targetTransform, this.currentTransform);
+        this.mounted = false;
+        this.isAwake = false;
 
-        this.scanFormulas();
-        this.mount();
-    }
+        // Default transforms
+        this.currentTransform = { translateX: 0, translateY: 0, translateZ: 0, rotateX: 0, rotateY: 0, rotateZ: 0, scale: 1 };
+        this.targetTransform = { translateX: 0, translateY: 0, translateZ: 0, rotateX: 0, rotateY: 0, rotateZ: 0, scale: 1 };
 
-    scanFormulas() {
-        Object.entries(this.data.props).forEach(([key, value]) => {
-            if (FormulaParser.isFormula(value)) {
-                this.formulaProps.set(`p:${key}`, value);
-                this.wakeUp();
-            }
-        });
-
-        const sourceTransform = this.data.props.transform || this.data.baseTransform;
-        if (sourceTransform) {
-            Object.entries(sourceTransform).forEach(([key, value]) => {
-                if (FormulaParser.isFormula(value)) {
-                    this.formulaProps.set(`t:${key}`, value);
-                    this.wakeUp();
+        if (this.data.baseTransform) {
+            // Only assign numeric values to current/target, formulas are processed in BehaviorManager
+            ['translateX', 'translateY', 'translateZ', 'rotateX', 'rotateY', 'rotateZ', 'scale'].forEach(prop => {
+                const val = this.data.baseTransform[prop];
+                if (typeof val === 'number') {
+                    this.currentTransform[prop] = val;
+                    this.targetTransform[prop] = val;
                 }
             });
         }
-    }
 
-    mount() {
-        if (!this.element) {
-            this.element = document.createElement('div');
-            this.element.style.transformStyle = 'preserve-3d';
-        }
-        this.element.id = this.data.id;
-        this.element.style.zIndex = this.depth;
-
-        // Z-fighting micro-compensation
+        // Compensar Z-fighting por profundidad
         this.currentTransform.translateZ += (this.depth * 0.001);
         this.targetTransform.translateZ += (this.depth * 0.001);
 
-        this.applyStyles();
+        this.listeners = new Map();
+        this.behaviorManager = null;
+
+        if (this.element) {
+            // Reuse element
+            this.element.style.cssText = "";
+            this.element.innerHTML = "";
+        }
+
+        this.mount();
+    }
+
+    mount() {
+        if (this.mounted) return;
+
+        if (!this.element) {
+            this.element = document.createElement('div');
+        }
+        this.element.id = this.data.id;
+        this.element.dataset.path = this.data.path;
+
+        // Estilos obligatorios para espacio 3D
+        this.element.style.transformStyle = 'preserve-3d';
+        this.element.style.zIndex = this.depth;
+
+        this.applyBaseStyles();
+        this.setupSiblingHover();
+
         this.parentElement.appendChild(this.element);
         this.mounted = true;
 
-        this.behaviorManager = new BehaviorManager(this);
-        this.behaviorManager.init();
+        // Initialize Behaviors
+        import('../core/BehaviorManager.js').then(({ BehaviorManager }) => {
+            if (!this.mounted) return;
+            this.behaviorManager = new BehaviorManager(this);
+            this.behaviorManager.init();
+        });
 
+        // Force initial transform string composition
         this.applyTransform();
     }
 
-    applyStyles() {
-        Object.entries(this.data.props).forEach(([key, value]) => {
-            if (key.startsWith('--')) {
-                this.element.style.setProperty(key, value);
-            } else if (key === 'innerHTML') {
-                if (!FormulaParser.isFormula(value)) this.updateInnerHTML(value);
-            } else if (key !== 'transform' && !FormulaParser.isFormula(value)) {
-                this.element.style[key] = value;
-            }
+    setupSiblingHover() {
+        if (!this.data.logic || !this.data.logic.hoverHermanos) return;
+
+        const hoverStyles = this.data.logic.hover;
+        const siblingStyles = this.data.logic.hoverHermanos;
+
+        this.element.addEventListener('mouseenter', () => {
+            // Apply my hover
+            if (hoverStyles) this.patch({ props: hoverStyles });
+
+            // Apply to siblings
+            const siblings = Array.from(this.parentElement.children).filter(el => el !== this.element);
+            siblings.forEach(siblingEl => {
+                telemetry.publish(`action:${siblingEl.dataset.path}`, { props: siblingStyles });
+            });
+        });
+
+        this.element.addEventListener('mouseleave', () => {
+             // Normally we'd need an "undo" state, but for simplicity we rely on next patches
+             // or a more complex state system.
         });
     }
 
-    updateInnerHTML(html) {
-        if (this.lastInnerHTML !== html) {
-            this.element.innerHTML = html;
-            this.lastInnerHTML = html;
+    applyBaseStyles() {
+        for (const [key, value] of Object.entries(this.data.props)) {
+            if (key.startsWith('--')) {
+                this.element.style.setProperty(key, value);
+            } else if (key === 'innerHTML') {
+                this.element.innerHTML = value;
+            } else if (key !== 'transform') {
+                this.element.style[key] = value;
+            }
         }
     }
 
     update(deltaTime) {
         if (!this.mounted || !this.isAwake) return false;
+
         let requiresUpdate = false;
-
-        if (this.formulaProps.size > 0) {
-            const pointer = inputManager.getState().pointer;
-            const vars = {
-                time: ticker.elapsedTime,
-                index: this.data.props['--instance-index'] || 0,
-                total: this.data.props['--instance-total'] || 1,
-                mouseX: pointer.normalX,
-                mouseY: pointer.normalY
-            };
-
-            this.formulaProps.forEach((formula, key) => {
-                const value = FormulaParser.evaluate(formula, vars);
-                if (key.startsWith('p:')) {
-                    const propName = key.split(':')[1];
-                    propName === 'innerHTML' ? this.updateInnerHTML(value) : (this.element.style[propName] = value);
-                } else {
-                    const transName = key.split(':')[1];
-                    this.targetTransform[transName] = value;
-                    if (!this.behaviorManager) this.currentTransform[transName] = value;
-                }
-                requiresUpdate = true;
-            });
-        }
-
-        if (this.behaviorManager && this.behaviorManager.update(deltaTime)) {
-            requiresUpdate = true;
+        if (this.behaviorManager) {
+            requiresUpdate = this.behaviorManager.update(deltaTime);
         }
 
         this.applyTransform();
-        return this.formulaProps.size > 0 || requiresUpdate;
+        return requiresUpdate;
     }
 
     applyTransform() {
         const t = this.currentTransform;
-        const s = `translate3d(${t.translateX.toFixed(2)}px, ${t.translateY.toFixed(2)}px, ${t.translateZ.toFixed(3)}px) rotateY(${t.rotateY.toFixed(2)}deg) rotateX(${t.rotateX.toFixed(2)}deg) rotateZ(${t.rotateZ.toFixed(2)}deg) scale(${t.scale.toFixed(3)})`;
+        // Optimización: Usar variables CSS para que el navegador solo recomponga si cambian
+        // pero aquí las aplicamos directamente para control total del orden
+        const str = `translate3d(${t.translateX}px, ${t.translateY}px, ${t.translateZ}px) rotateY(${t.rotateY}deg) rotateX(${t.rotateX}deg) rotateZ(${t.rotateZ}deg) scale(${t.scale})`;
+        this.element.style.transform = str;
+    }
 
-        if (this.lastTransformString !== s) {
-            this.element.style.transform = s;
-            this.lastTransformString = s;
+    patch(partialData) {
+        if (partialData.props) {
+            this.data.props = fusionar(this.data.props, partialData.props, 0);
+            this.applyBaseStyles();
         }
+        if (partialData.logic) {
+            this.data.logic = fusionar(this.data.logic, partialData.logic, 0);
+        }
+        this.wakeUp();
     }
 
     wakeUp() {
@@ -157,13 +149,15 @@ export class RenderNode {
     }
 
     unmount() {
+        this.isAwake = false;
         ticker.removeNode(this);
-        if (this.behaviorManager) {
-            this.behaviorManager.dispose();
-            this.behaviorManager = null;
-        }
-        if (this.element && this.element.parentElement) {
-            this.element.parentElement.removeChild(this.element);
+        if (this.behaviorManager) this.behaviorManager.dispose();
+        if (this.element && this.parentElement) {
+            try {
+                this.parentElement.removeChild(this.element);
+            } catch (e) {
+                // Parent might have been removed already
+            }
         }
         this.mounted = false;
     }

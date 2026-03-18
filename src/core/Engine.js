@@ -1,21 +1,16 @@
 import { inputManager } from '../events/InputManager.js';
-import { DataLoader } from '../loaders/DataLoader.js';
-import { BehaviorManager } from './BehaviorManager.js';
-import { sceneManager } from './SceneManager.js';
 import { renderer } from '../render/Renderer.js';
+import { sceneManager } from './SceneManager.js';
+import { DataLoader } from '../loaders/DataLoader.js';
 
 class Engine {
     constructor() {
         this.loader = new DataLoader();
     }
 
-    async init(rootId) {
+    async init(rootElementId) {
         inputManager.init();
-        renderer.init(rootId);
-    }
-
-    registerBehavior(name, setupFn) {
-        BehaviorManager.register(name, setupFn);
+        renderer.init(rootElementId);
     }
 
     async loadTemplates(url) {
@@ -25,12 +20,11 @@ class Engine {
 
     async loadAndMount(url) {
         const data = await this.loader.load(url);
-        await renderer.mount(data);
+        renderer.mount(data);
     }
 
     async transitionTo(url) {
         return await sceneManager.transitionTo(url);
     }
 }
-
 export const engine = new Engine();

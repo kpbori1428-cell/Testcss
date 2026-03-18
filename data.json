@@ -1,5 +1,40 @@
 {
-    "id": "scene",
-    "props": { "width": "100%", "height": "100%", "display": "flex", "justifyContent": "center", "alignItems": "center" },
-    "children": [ { "id": "cube", "template": "V4_CUBE", "children": [ { "id": "text", "props": { "color": "white", "innerHTML": "V4 Engine" } } ] } ]
+    "id": "main_scene",
+    "props": { "width": "100vw", "height": "100vh", "display": "flex", "justifyContent": "center", "alignItems": "center", "overflow": "hidden" },
+    "logic": { "lookAtMouse": { "maxRotationX": 20, "maxRotationY": 20 }, "inertia": 0.96 },
+    "children": [
+        {
+            "id": "star",
+            "props": {
+                "width": "4px", "height": "4px", "backgroundColor": "#fff", "borderRadius": "50%",
+                "transform": {
+                    "translateZ": "= (index * 20) - 500",
+                    "translateX": "= (index * 40) - 1000"
+                }
+            },
+            "logic": {
+                "instancias": {
+                    "cantidad": 50,
+                    "spread": { "x": 2000, "y": 1000, "z": 1000 }
+                },
+                "recycle": { "bounds": { "x": 1000, "y": 1000, "z": 1000 } },
+                "autoAnimate": { "rotateY": 0.1 }
+            }
+        },
+        {
+            "id": "math_demo",
+            "template": "card",
+            "props": {
+                "transform": {
+                    "translateY": "= sin(time * 2 + index) * 100",
+                    "rotateY": "= time * 50",
+                    "scale": "= 1 + cos(time) * 0.2"
+                }
+            },
+            "logic": { "instancias": 5 },
+            "children": [
+                { "id": "t", "props": { "width": "100%", "textAlign": "center", "color": "white", "innerHTML": "MATH ENGINE", "pointerEvents": "none" } }
+            ]
+        }
+    ]
 }

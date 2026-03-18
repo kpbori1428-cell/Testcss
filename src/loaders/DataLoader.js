@@ -10,13 +10,19 @@ export class DataLoader {
 
         try {
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${url}: ${response.statusText}`);
+            }
             const data = await response.json();
             this.cache.set(url, data);
             return data;
         } catch (error) {
-            console.error(`[DataLoader] Failed to load ${url}:`, error);
+            console.error('[DataLoader] Error fetching JSON:', error);
             throw error;
         }
+    }
+
+    clearCache() {
+        this.cache.clear();
     }
 }

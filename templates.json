@@ -1,17 +1,21 @@
 {
-    "V4_CUBE": {
-        "props": { "width": "200px", "height": "200px", "backgroundColor": "rgba(0, 150, 255, 0.4)", "border": "2px solid #0096ff", "display": "flex", "justifyContent": "center", "alignItems": "center" },
-        "logic": { "extrude": 200, "mouseFollow": { "inertia": 0.9 } }
-    },
-    "V4_STAR": {
+    "card": {
         "props": {
-            "width": "4px", "height": "4px",
-            "backgroundColor": "white",
-            "borderRadius": "50%",
-            "boxShadow": "0 0 10px white"
+            "width": "200px", "height": "280px",
+            "backgroundColor": "rgba(20, 20, 20, 0.8)",
+            "border": "1px solid #444",
+            "borderRadius": "16px",
+            "display": "flex", "flexDirection": "column",
+            "justifyContent": "center", "alignItems": "center",
+            "padding": "20px", "boxSizing": "border-box",
+            "boxShadow": "0 10px 30px rgba(0,0,0,0.5)",
+            "cursor": "pointer"
         },
         "logic": {
-            "parallax": { "factor": 0.2 }
+            "inertia": 0.9,
+            "lookAtMouse": { "maxRotationX": 35, "maxRotationY": 35 },
+            "hover": { "props": { "borderColor": "#0096ff", "backgroundColor": "rgba(30, 30, 40, 0.95)" } },
+            "hoverHermanos": { "props": { "opacity": 0.3, "scale": 0.95 } }
         }
     }
 }
