@@ -1,50 +1,45 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
 const path = require('path');
+const https = require('https');
+const http = require('http');
 
-const PORT = 3000;
+const app = express();
+const port = 3000;
 
-const MIME_TYPES = {
-    '.html': 'text/html',
-    '.js': 'text/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.ico': 'image/x-icon'
-};
+app.use(express.static(path.join(__dirname, '')));
 
-const server = http.createServer((req, res) => {
-    console.log(`${req.method} ${req.url}`);
+// Simple CORS proxy endpoint to fetch raw HTML
+app.get('/proxy', (req, res) => {
+    const targetUrl = req.query.url;
+    if (!targetUrl) return res.status(400).send('No URL provided');
 
-    // Handle root URL
-    let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+    const protocol = targetUrl.startsWith('https') ? https : http;
 
-    // Get file extension
-    const extname = path.extname(filePath).toLowerCase();
+    protocol.get(targetUrl, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' // Pretend to be a normal browser
+        },
+        rejectUnauthorized: false // Bypass "unable to get local issuer certificate" in local testing proxy
+    }, (proxyRes) => {
+        let data = '';
 
-    // Default content type
-    let contentType = MIME_TYPES[extname] || 'application/octet-stream';
+        proxyRes.on('data', (chunk) => {
+            data += chunk;
+        });
 
-    // Read the file
-    fs.readFile(filePath, (error, content) => {
-        if (error) {
-            if (error.code === 'ENOENT') {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('404 Not Found', 'utf-8');
-            } else {
-                res.writeHead(500);
-                res.end('Server Error: ' + error.code, 'utf-8');
-            }
-        } else {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
-        }
+        proxyRes.on('end', () => {
+            // Send back raw HTML, ignoring any security headers from the original server
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Content-Type', proxyRes.headers['content-type'] || 'text/html');
+            res.send(data);
+        });
+
+    }).on('error', (err) => {
+        console.error('Proxy Error:', err.message);
+        res.status(500).send('Error fetching URL: ' + err.message);
     });
 });
 
-server.listen(PORT, () => {
-    console.log(`Servidor iniciado. Abre tu navegador en: http://localhost:${PORT}/`);
+app.listen(port, () => {
+  console.log(`Motor 3D funcionando en http://localhost:${port}`);
 });
