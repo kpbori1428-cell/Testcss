@@ -48,9 +48,9 @@ self.addEventListener('fetch', (event) => {
                     // Inyección programática de <base> para arreglar rutas relativas de CSS/Imágenes/Scripts
                     text = text.replace('<head>', `<head><base href="${targetOrigin}/">`);
 
-                    // También podríamos inyectar un script para comunicar la URL actual a logic_navegador.js
+                    // También podríamos inyectar un script para comunicar la URL original a logic_navegador.js
                     const scriptInjector = `<script>
-                        window.parent.postMessage({type: 'nav-update', url: window.location.href}, '*');
+                        window.parent.postMessage({type: 'nav-update', url: "${targetUrl}"}, '*');
                     </script>`;
                     text = text.replace('</body>', `${scriptInjector}</body>`);
 

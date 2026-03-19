@@ -34,8 +34,10 @@ export class NavegadorLogic {
                     let url = urlInput.value.trim();
                     if (!url.startsWith('http://') && !url.startsWith('https://')) {
                         url = 'https://' + url;
-                        urlInput.value = url;
+
                     }
+                    // Actualizar el valor visual del input para que coincida con el iframe inmediatamente
+                    urlInput.value = url;
 
                     if (window.SistemaOperativo && window.SistemaOperativo.modoAvion) {
                         iframe.srcdoc = "<h2 style='font-family:sans-serif; text-align:center; margin-top: 50px;'>Sin Conexión: Modo Avión Activado</h2>";
