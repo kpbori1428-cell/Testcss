@@ -8,6 +8,22 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
 });
 
+// Extrae el dominio base real de la URL inyectada en el iframe
+// ej: de "http://localhost:3000/sw/https://eficell.cl/algo" a "https://eficell.cl"
+function getRealOrigin(referrerUrl) {
+    if (!referrerUrl) return null;
+    try {
+        const parts = referrerUrl.split('/sw/');
+        if (parts.length > 1) {
+            const injectedUrl = new URL(parts[1]);
+            return injectedUrl.origin;
+        }
+    } catch(e) {
+        return null;
+    }
+    return null;
+}
+
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
@@ -16,30 +32,25 @@ self.addEventListener('fetch', (event) => {
         '/', '/index.html', '/engine.js', '/apps.js', '/sw.js', '/data.json', '/instaladas.json',
         '/server.js', '/favicon.ico'
     ];
-    if (localSystemFiles.includes(url.pathname) || url.pathname.endsWith('.json') || url.pathname.endsWith('.js') && !event.request.referrer.includes('/sw/')) {
+    if (localSystemFiles.includes(url.pathname) || url.pathname.endsWith('.json') || (url.pathname.endsWith('.js') && !event.request.referrer.includes('/sw/'))) {
         return; // Deja que el navegador lo pida normalmente
     }
 
     let targetUrl = null;
 
-    // 1. Petición explícita al túnel proxy (Ej: src="/sw/https://google.com")
+    // 1. Petición explícita inicial al túnel proxy (Ej: iframe.src = "/sw/https://google.com")
     if (url.pathname.startsWith('/sw/')) {
         targetUrl = url.pathname.replace('/sw/', '') + url.search;
     }
-    // 2. Petición "Huérfana" (Ej: un script JS de la página inyectada pidió "/webchat/bubble.js")
+    // 2. Intercepción de Peticiones Dinámicas (Huérfanas)
     // Como el iframe está alojado en localhost, el navegador pedirá "http://localhost:3000/webchat/bubble.js"
     // Debemos atraparla, mirar quién la pidió (Referer) y redirigirla a su dominio real.
     else if (url.origin === self.location.origin) {
-        const referrer = event.request.referrer;
-        if (referrer && referrer.includes('/sw/')) {
-            try {
-                // Extraer el dominio real de la URL del referer
-                // Ej referer: "http://localhost:3000/sw/https://eficell.cl/"
-                const realOriginUrl = new URL(referrer.split('/sw/')[1]);
-                targetUrl = realOriginUrl.origin + url.pathname + url.search;
-            } catch (e) {
-                console.error('[SW] Error reconstruyendo URL huérfana:', e);
-            }
+        const realOrigin = getRealOrigin(event.request.referrer);
+        if (realOrigin) {
+            // Reconstruimos la ruta con el origen real externo
+            targetUrl = realOrigin + url.pathname + url.search;
+            console.log(`[SW] Interceptada petición huérfana de ${url.pathname}, re-dirigiendo a ${targetUrl}`);
         }
     }
 
@@ -47,30 +58,29 @@ self.addEventListener('fetch', (event) => {
         // Enviamos la petición reconstruida a nuestro proxy local que hace el Header Stripping
         const proxyUrl = `/proxy?url=${encodeURIComponent(targetUrl)}`;
 
+        // Reconstruimos el objeto Request forzando CORS (Punto 1 de la arquitectura sugerida)
         const modifiedRequest = new Request(proxyUrl, {
             method: event.request.method,
             headers: event.request.headers,
-            mode: 'cors', // Forzamos CORS para que nuestro proxy lo maneje
-            credentials: 'omit', // En un proxy avanzado se manejaría el state, aquí lo omitimos por simplicidad inicial
+            mode: 'cors', // Forzamos a CORS para el proxy
+            credentials: 'omit', // Omitimos cookies propias hacia el proxy (el proxy descargará sin cookies por ahora)
             redirect: 'manual'
         });
 
         event.respondWith(
             fetch(modifiedRequest).then(async (response) => {
-                // Clonamos la respuesta para poder modificar sus cabeceras (Header Stripping se hace mayormente en server.js)
-                // Pero aquí inyectamos la etiqueta <base> en el HTML si es HTML
+                // Clonamos la respuesta si es necesario modificarla
                 const contentType = response.headers.get('content-type') || '';
 
+                // Si es HTML, aplicamos las técnicas de reescritura
                 if (contentType.includes('text/html')) {
                     let text = await response.text();
-
-                    // Extraer el origen base para inyectar <base>
                     const targetOrigin = new URL(targetUrl).origin;
 
-                    // Inyección programática de <base> para arreglar rutas relativas de CSS/Imágenes/Scripts
-                    text = text.replace('<head>', `<head><base href="${targetOrigin}/">`);
+                    // Inyección programática del Nodo <base> para arreglar el 80% de rutas relativas
+                    text = text.replace(/<head[^>]*>/i, `<head><base href="${targetOrigin}/">`);
 
-                    // También podríamos inyectar un script para comunicar la URL original a logic_navegador.js
+                    // Inyección de script para mantener sincronizada la barra de URL del teléfono 3D
                     const scriptInjector = `<script>
                         window.parent.postMessage({type: 'nav-update', url: "${targetUrl}"}, '*');
                     </script>`;
@@ -79,11 +89,12 @@ self.addEventListener('fetch', (event) => {
                     return new Response(text, {
                         status: response.status,
                         statusText: response.statusText,
-                        headers: response.headers // Las cabeceras ya vienen "limpias" (sin X-Frame-Options) desde server.js
+                        headers: response.headers // Ya vienen limpias de X-Frame-Options gracias al server.js
                     });
                 }
 
-                return response; // Para imágenes, CSS o scripts, devolver tal cual
+                // Para binarios (JS, CSS, Imágenes), devolver la respuesta inalterada
+                return response;
             }).catch((err) => {
                 console.error('[SW] Error en proxy fetch:', err);
                 return new Response(`Error: ${err.message}`, { status: 500 });

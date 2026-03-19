@@ -62,13 +62,18 @@ app.all('/proxy', (req, res) => {
         // Forward the original status code
         res.status(proxyRes.statusCode);
 
-        // Header Stripping for iframe compatibility
-        const contentType = proxyRes.headers['content-type'] || 'application/octet-stream';
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Content-Type', contentType);
+        // Forward headers except for those that break iframes
+        for (const [key, value] of Object.entries(proxyRes.headers)) {
+            const lowerKey = key.toLowerCase();
+            if (lowerKey !== 'x-frame-options' && lowerKey !== 'content-security-policy') {
+                res.setHeader(key, value);
+            }
+        }
 
-        // Re-inject a modified CSP to allow our frame-src if needed
-        // Omitted X-Frame-Options entirely since res.setHeader only adds, it doesn't pass the original unless explicitly copied.
+        // Ensure CORS and default content-type
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        const contentType = proxyRes.headers['content-type'] || 'application/octet-stream';
+        res.setHeader('Content-Type', contentType);
 
         // Si es HTML, necesitamos bufferizar para inyectar DOCTYPE si falta (Quirks Mode fix)
         if (contentType.includes('text/html')) {

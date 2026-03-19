@@ -20,33 +20,47 @@ export class NavegadorLogic {
                     <button id="nav-go-btn" style="border:none; background: #007bff; color:white; border-radius: 10px; padding: 5px 10px; cursor: pointer; pointer-events: auto;">Ir</button>
                 `;
 
-                // Usaremos un iframe estándar, pero su src apuntará a nuestro Service Worker proxy pattern
-                // El prefijo "/sw/" le dirá a nuestro Service Worker (sw.js) que intercepte y modifique esta petición.
-                // Nota: Eliminamos allow-same-origin del sandbox por seguridad. Al usar un proxy local (/sw/...),
-                // permitir scripts y same-origin al mismo tiempo permitiría al código inyectado acceder al DOM del motor 3D.
                 webviewNode.domElement.innerHTML = `
-                    <iframe id="nav-iframe" src="/sw/https://example.com" sandbox="allow-scripts allow-forms allow-popups allow-downloads" style="width:100%; height:100%; border:none; pointer-events:auto; background:white;"></iframe>
+                    <iframe id="nav-iframe" sandbox="allow-scripts allow-forms allow-popups allow-downloads allow-same-origin" style="width:100%; height:100%; border:none; pointer-events:auto; background:white;"></iframe>
                 `;
 
                 const goBtn = document.getElementById("nav-go-btn");
                 const urlInput = document.getElementById("nav-url-input");
                 const iframe = document.getElementById("nav-iframe");
 
+                // Esperar a que el Service Worker esté activo antes de navegar
+                const loadUrl = (url) => {
+                    // Limpiar el srcdoc en caso de que viniéramos del modo avión
+                    if (iframe.hasAttribute("srcdoc")) {
+                        iframe.removeAttribute("srcdoc");
+                    }
+
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                        iframe.src = `/sw/${url}`;
+                    } else {
+                        // Si el Service Worker no está listo aún, esperamos a que esté activo
+                        console.log("[Navegador] Esperando que el Service Worker esté listo...");
+                        navigator.serviceWorker.ready.then(() => {
+                            iframe.src = `/sw/${url}`;
+                        });
+                    }
+                };
+
+                // Carga inicial
+                loadUrl("https://example.com");
+
                 goBtn.addEventListener("click", () => {
                     let url = urlInput.value.trim();
                     if (!url.startsWith('http://') && !url.startsWith('https://')) {
                         url = 'https://' + url;
-
                     }
-                    // Actualizar el valor visual del input para que coincida con el iframe inmediatamente
-                    urlInput.value = url;
+                    urlInput.value = url; // Sincronizar vista de la barra
 
                     if (window.SistemaOperativo && window.SistemaOperativo.modoAvion) {
                         iframe.srcdoc = "<h2 style='font-family:sans-serif; text-align:center; margin-top: 50px;'>Sin Conexión: Modo Avión Activado</h2>";
                         iframe.removeAttribute("src");
                     } else {
-                        // Enrutamos a través de nuestro prefijo mágico interceptado por el Service Worker
-                        iframe.src = `/sw/${url}`;
+                        loadUrl(url);
                     }
                 });
 
@@ -56,7 +70,7 @@ export class NavegadorLogic {
                     }
                 });
 
-                // Actualizar la URL de la barra de búsqueda cuando el iframe navega (interceptado por sw postMessage si se configura)
+                // Actualizar la URL de la barra de búsqueda cuando el iframe navega (interceptado por sw postMessage)
                 window.addEventListener('message', (e) => {
                     if(e.data && e.data.type === 'nav-update' && e.data.url) {
                         urlInput.value = e.data.url;
