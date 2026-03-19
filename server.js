@@ -74,24 +74,39 @@ app.all('/proxy', (req, res) => {
 
         // Ensure CORS and default content-type
         res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', '*');
         const contentType = proxyRes.headers['content-type'] || 'application/octet-stream';
         res.setHeader('Content-Type', contentType);
 
         // Si es HTML, necesitamos bufferizar para inyectar DOCTYPE si falta (Quirks Mode fix)
-        if (contentType.includes('text/html')) {
-            let data = '';
+        // Y reescribir URLs absolutas para que pasen por el proxy
+        if (contentType.includes('text/html') || contentType.includes('text/css') || contentType.includes('application/javascript')) {
+             let data = '';
 
-            proxyRes.on('data', (chunk) => {
-                data += chunk;
-            });
+             proxyRes.on('data', (chunk) => {
+                 data += chunk;
+             });
 
-            proxyRes.on('end', () => {
-                const headStr = data.substring(0, 100).toLowerCase();
-                if (!headStr.includes('<!doctype html>')) {
-                    data = '<!DOCTYPE html>\n' + data;
-                }
-                res.send(data);
-            });
+             proxyRes.on('end', () => {
+                 if (contentType.includes('text/html')) {
+                     const headStr = data.substring(0, 100).toLowerCase();
+                     if (!headStr.includes('<!doctype html>')) {
+                         data = '<!DOCTYPE html>\n' + data;
+                     }
+                     // Rewrite relative paths for typical assets like src="/showcase.css" to the targetUrl origin
+                     const urlObj = new URL(targetUrl);
+                     const origin = urlObj.origin;
+
+                     // Inject a base tag
+                     if (data.includes('<head>')) {
+                        data = data.replace('<head>', `<head><base href="${origin}/">`);
+                     } else if (data.includes('<HEAD>')) {
+                        data = data.replace('<HEAD>', `<HEAD><base href="${origin}/">`);
+                     }
+                 }
+                 res.send(data);
+             });
         } else {
             // Para cualquier otro archivo (JS, CSS, Imágenes, Videos, Binarios), NO bufferizar como string.
             // Transmitir directamente por tubería (pipe) para ahorrar RAM y no corromper los binarios.

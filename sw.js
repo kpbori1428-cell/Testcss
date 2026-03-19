@@ -51,38 +51,69 @@ self.addEventListener('fetch', (event) => {
             // Reconstruimos la ruta con el origen real externo
             targetUrl = realOrigin + url.pathname + url.search;
             console.log(`[SW] Interceptada petición huérfana de ${url.pathname}, re-dirigiendo a ${targetUrl}`);
+        } else {
+            // Attempt to resolve based on the last known navigation if referrer is missing
+            // We can check if it's a request to a proxy path
+            // For now, if we can't find a referrer, we let it pass, but typically this is where 404s happen
+        }
+    } else {
+        // Intercept external requests directly (like APIs and scripts from the same origin but blocked by CORS)
+        // If it's not our origin, we should proxy it to bypass CORS!
+        // We shouldn't intercept API requests made from within a page loaded directly in the iframe (direct requests not through our SW path /sw/)
+        // Actually, we must intercept them to bypass CORS.
+        if ((url.protocol === 'http:' || url.protocol === 'https:') && !event.request.url.includes('proxy?url=')) {
+            targetUrl = url.href;
+            console.log(`[SW] Proxificando petición externa: ${targetUrl}`);
         }
     }
 
     if (targetUrl) {
+        // No proxificamos requests a google fonts directamente, a veces rompen el woff2
+        if (targetUrl.includes('fonts.googleapis.com') || targetUrl.includes('fonts.gstatic.com')) {
+            return;
+        }
+
         // Enviamos la petición reconstruida a nuestro proxy local que hace el Header Stripping
         const proxyUrl = `/proxy?url=${encodeURIComponent(targetUrl)}`;
 
         // Reconstruimos el objeto Request forzando CORS (Punto 1 de la arquitectura sugerida)
+        // We MUST NOT pass event.request.headers directly because some headers like Sec-Fetch-Dest are immutable and might conflict
+        const newHeaders = new Headers();
+        for (const [key, value] of event.request.headers.entries()) {
+            // Drop problematic headers that might cause CORS issues or mismatches
+            if (!key.toLowerCase().startsWith('sec-fetch-')) {
+                newHeaders.append(key, value);
+            }
+        }
+
         const modifiedRequest = new Request(proxyUrl, {
             method: event.request.method,
-            headers: event.request.headers,
+            headers: newHeaders,
             mode: 'cors', // Forzamos a CORS para el proxy
             credentials: 'omit', // Omitimos cookies propias hacia el proxy (el proxy descargará sin cookies por ahora)
-            redirect: 'manual'
+            redirect: 'follow'
         });
 
         event.respondWith(
             fetch(modifiedRequest).then(async (response) => {
+                // Return immediately if it's an opaque response
+                if (response.type === 'opaque') {
+                     return response;
+                }
+
                 // Clonamos la respuesta si es necesario modificarla
                 const contentType = response.headers.get('content-type') || '';
 
                 // Si es HTML, aplicamos las técnicas de reescritura
                 if (contentType.includes('text/html')) {
                     let text = await response.text();
-                    const targetOrigin = new URL(targetUrl).origin;
-
-                    // Inyección programática del Nodo <base> para arreglar el 80% de rutas relativas
-                    text = text.replace(/<head[^>]*>/i, `<head><base href="${targetOrigin}/">`);
 
                     // Inyección de script para mantener sincronizada la barra de URL del teléfono 3D
+                    // The base tag is already handled by server.js proxy
                     const scriptInjector = `<script>
-                        window.parent.postMessage({type: 'nav-update', url: "${targetUrl}"}, '*');
+                        try {
+                            window.parent.postMessage({type: 'nav-update', url: "${targetUrl}"}, '*');
+                        } catch(e) {}
                     </script>`;
                     text = text.replace('</body>', `${scriptInjector}</body>`);
 
