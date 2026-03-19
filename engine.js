@@ -536,11 +536,4 @@ export async function initEngine(jsonUrl) {
     }
 }
 
-// Autoejecución si se carga como módulo y existe index.html (opcional, útil para pruebas rápidas)
-if (typeof document !== 'undefined') {
-    document.addEventListener("DOMContentLoaded", () => {
-        // En nuestro caso el HTML asume que engine.js podría exportar,
-        // pero vamos a auto-arrancar si tenemos data.json localmente
-        initEngine('./data.json').catch(()=> console.log("Carga diferida"));
-    });
-}
+// Se elimina la autoejecución para evitar la doble inicialización con index.html

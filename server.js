@@ -9,6 +9,12 @@ const port = 3000;
 app.use(express.static(path.join(__dirname, '')));
 
 // Simple CORS proxy endpoint to fetch raw HTML
+// Fallback route if Service Worker isn't active yet, redirect to the real proxy
+app.get('/sw/*', (req, res) => {
+    const targetUrl = req.url.replace('/sw/', '');
+    res.redirect(`/proxy?url=${encodeURIComponent(targetUrl)}`);
+});
+
 app.get('/proxy', (req, res) => {
     const targetUrl = req.query.url;
     if (!targetUrl) return res.status(400).send('No URL provided');

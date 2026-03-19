@@ -22,8 +22,10 @@ export class NavegadorLogic {
 
                 // Usaremos un iframe estándar, pero su src apuntará a nuestro Service Worker proxy pattern
                 // El prefijo "/sw/" le dirá a nuestro Service Worker (sw.js) que intercepte y modifique esta petición.
+                // Nota: Eliminamos allow-same-origin del sandbox por seguridad. Al usar un proxy local (/sw/...),
+                // permitir scripts y same-origin al mismo tiempo permitiría al código inyectado acceder al DOM del motor 3D.
                 webviewNode.domElement.innerHTML = `
-                    <iframe id="nav-iframe" src="/sw/https://example.com" sandbox="allow-scripts allow-forms allow-popups allow-same-origin allow-downloads" style="width:100%; height:100%; border:none; pointer-events:auto; background:white;"></iframe>
+                    <iframe id="nav-iframe" src="/sw/https://example.com" sandbox="allow-scripts allow-forms allow-popups allow-downloads" style="width:100%; height:100%; border:none; pointer-events:auto; background:white;"></iframe>
                 `;
 
                 const goBtn = document.getElementById("nav-go-btn");
