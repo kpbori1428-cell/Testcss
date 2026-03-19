@@ -28,9 +28,13 @@ app.get('/proxy', (req, res) => {
         });
 
         proxyRes.on('end', () => {
-            // Send back raw HTML, ignoring any security headers from the original server
+            // Header Stripping for iframe compatibility
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Content-Type', proxyRes.headers['content-type'] || 'text/html');
+
+            // Re-inject a modified CSP to allow our frame-src if needed
+            // Omitted X-Frame-Options entirely since res.setHeader only adds, it doesn't pass the original unless explicitly copied.
+
             res.send(data);
         });
 

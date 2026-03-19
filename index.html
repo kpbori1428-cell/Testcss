@@ -41,6 +41,13 @@
     <script type="module">
         import { initEngine } from './engine.js';
 
+        // Registrar Service Worker para el motor proxy del Navegador 3D
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registrado con scope:', reg.scope))
+                .catch(err => console.log('Error registrando Service Worker:', err));
+        }
+
         // Load data.json on startup unconditionally
         initEngine('./data.json');
     </script>

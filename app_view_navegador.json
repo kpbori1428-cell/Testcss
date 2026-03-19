@@ -57,15 +57,7 @@
                 "flex": "1",
                 "position": "relative",
                 "background": "white",
-                "borderTop": "1px solid #ddd",
-                "overflow": "auto",
-                "display": "flex",
-                "flexDirection": "column",
-                "alignItems": "flex-start",
-                "padding": "10px",
-                "boxSizing": "border-box",
-                "color": "black",
-                "fontFamily": "sans-serif"
+                "borderTop": "1px solid #ddd"
             },
             "Transform_Base": {
                 "x": 0,
@@ -75,8 +67,7 @@
                 "ry": 0,
                 "rz": 0,
                 "scale": 1
-            },
-            "Hijos": []
+            }
         }
     ]
 }
