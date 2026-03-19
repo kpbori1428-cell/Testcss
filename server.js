@@ -17,10 +17,12 @@ app.options('*', (req, res) => {
     res.send();
 });
 
-// Fallback route if Service Worker isn't active yet, redirect to the real proxy
-app.get('/sw/*', (req, res) => {
+// Fallback route if Service Worker isn't active yet, rewrite the URL internally instead of HTTP redirect
+app.all('/sw/*', (req, res, next) => {
     const targetUrl = req.url.replace('/sw/', '');
-    res.redirect(`/proxy?url=${encodeURIComponent(targetUrl)}`);
+    req.url = `/proxy?url=${encodeURIComponent(targetUrl)}`;
+    req.query.url = targetUrl;
+    next();
 });
 
 // Manejamos cualquier tipo de método HTTP para que las apps web modernas funcionen
