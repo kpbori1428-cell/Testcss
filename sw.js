@@ -11,20 +11,42 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // Si la petición comienza con "/sw/", es una petición mágica para nuestro iframe.
-    // Ej: /sw/https://google.com
+    // Archivos propios del motor 3D que NUNCA deben ser proxificados
+    const localSystemFiles = [
+        '/', '/index.html', '/engine.js', '/apps.js', '/sw.js', '/data.json', '/instaladas.json',
+        '/server.js', '/favicon.ico'
+    ];
+    if (localSystemFiles.includes(url.pathname) || url.pathname.endsWith('.json') || url.pathname.endsWith('.js') && !event.request.referrer.includes('/sw/')) {
+        return; // Deja que el navegador lo pida normalmente
+    }
+
+    let targetUrl = null;
+
+    // 1. Petición explícita al túnel proxy (Ej: src="/sw/https://google.com")
     if (url.pathname.startsWith('/sw/')) {
-        let targetUrl = url.pathname.replace('/sw/', '') + url.search;
+        targetUrl = url.pathname.replace('/sw/', '') + url.search;
+    }
+    // 2. Petición "Huérfana" (Ej: un script JS de la página inyectada pidió "/webchat/bubble.js")
+    // Como el iframe está alojado en localhost, el navegador pedirá "http://localhost:3000/webchat/bubble.js"
+    // Debemos atraparla, mirar quién la pidió (Referer) y redirigirla a su dominio real.
+    else if (url.origin === self.location.origin) {
+        const referrer = event.request.referrer;
+        if (referrer && referrer.includes('/sw/')) {
+            try {
+                // Extraer el dominio real de la URL del referer
+                // Ej referer: "http://localhost:3000/sw/https://eficell.cl/"
+                const realOriginUrl = new URL(referrer.split('/sw/')[1]);
+                targetUrl = realOriginUrl.origin + url.pathname + url.search;
+            } catch (e) {
+                console.error('[SW] Error reconstruyendo URL huérfana:', e);
+            }
+        }
+    }
 
-        // Si el targetUrl no tiene dominio (ej: es un script relativo pedido por la página inyectada)
-        // Por ejemplo, el navegador pide: /sw/script.js. Tenemos que saber a qué dominio real pertenece.
-        // Como simplificación básica para este proxy local, asumimos que el iframe hace sus peticiones base bien.
-        // Para peticiones complejas (CORS total), enviaríamos la petición a nuestro server.js proxy.
-
-        // Enviamos la petición a nuestro proxy local que hace el Header Stripping
+    if (targetUrl) {
+        // Enviamos la petición reconstruida a nuestro proxy local que hace el Header Stripping
         const proxyUrl = `/proxy?url=${encodeURIComponent(targetUrl)}`;
 
-        // Reconstruimos el objeto Request como explica la arquitectura
         const modifiedRequest = new Request(proxyUrl, {
             method: event.request.method,
             headers: event.request.headers,
