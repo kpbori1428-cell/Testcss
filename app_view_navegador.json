@@ -4,7 +4,7 @@
     "Propiedades_Esteticas": {
         "backgroundColor": "#f0f0f0",
         "width": "100%",
-        "flex": "1",
+        "display": "flex",
         "flexDirection": "column",
         "alignItems": "center",
         "paddingTop": "20px",
