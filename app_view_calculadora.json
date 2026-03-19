@@ -3,7 +3,7 @@
     "Propiedades_Esteticas": {
         "width": "100%",
         "flex": "1",
-        "display": "none",
+        "display": "flex",
         "flexDirection": "column",
         "justifyContent": "flex-end",
         "alignItems": "center",

@@ -1,0 +1,44 @@
+{
+    "id": "app_calculadora",
+    "app_json": "app_view_calculadora.json",
+    "App_Logic": "AppLauncher",
+    "Propiedades_Esteticas": {
+        "width": "55px",
+        "height": "55px",
+        "background": "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+        "borderRadius": "15px",
+        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+        "position": "relative",
+        "border": "1px solid rgba(255,255,255,0.4)",
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "color": "#d63384",
+        "fontSize": "24px",
+        "fontWeight": "bold",
+        "fontFamily": "sans-serif"
+    },
+    "Directivas_Logicas": {
+        "mouse-follow": "-5"
+    },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": 5,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
+    "Hijos": [
+        {
+            "id": "txt",
+            "Propiedades_Esteticas": {
+                "display": "block",
+                "position": "relative"
+            },
+            "Hijos": [],
+            "innerHTML": "+-"
+        }
+    ]
+}

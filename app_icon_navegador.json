@@ -1,0 +1,43 @@
+{
+    "id": "app_navegador",
+    "App_Logic": "AppLauncher",
+    "app_json": "app_view_navegador.json",
+    "Propiedades_Esteticas": {
+        "width": "55px",
+        "height": "55px",
+        "background": "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+        "borderRadius": "15px",
+        "boxShadow": "0 4px 10px rgba(0,0,0,0.3)",
+        "position": "relative",
+        "border": "1px solid rgba(255,255,255,0.4)",
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center"
+    },
+    "Directivas_Logicas": {
+        "mouse-follow": "-5"
+    },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": 5,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
+    "Hijos": [
+        {
+            "id": "txt_nav",
+            "Propiedades_Esteticas": {
+                "color": "#283593",
+                "fontSize": "24px",
+                "margin": "10px",
+                "position": "relative",
+                "pointerEvents": "none"
+            },
+            "Hijos": [],
+            "innerHTML": "\ud83c\udf10"
+        }
+    ]
+}

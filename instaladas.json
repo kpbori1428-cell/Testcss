@@ -1,0 +1,27 @@
+{
+    "calculadora": {
+        "icon_json": "app_icon_calculadora.json",
+        "logic_js": "logic_calculadora.js",
+        "logic_class": "CalculadoraLogic"
+    },
+    "galeria": {
+        "icon_json": "app_icon_galeria.json",
+        "logic_js": "logic_galeria.js",
+        "logic_class": "GaleriaLogic"
+    },
+    "ajustes": {
+        "icon_json": "app_icon_ajustes.json",
+        "logic_js": "logic_ajustes.js",
+        "logic_class": "AjustesLogic"
+    },
+    "mapa": {
+        "icon_json": "app_icon_mapa.json",
+        "logic_js": "logic_mapa.js",
+        "logic_class": "MapaLogic"
+    },
+    "navegador": {
+        "icon_json": "app_icon_navegador.json",
+        "logic_js": "logic_navegador.js",
+        "logic_class": "NavegadorLogic"
+    }
+}
