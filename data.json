@@ -1,0 +1,380 @@
+{
+    "id": "escena_telefono",
+    "Propiedades_Esteticas": {
+        "width": "100%",
+        "height": "100%",
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center"
+    },
+    "Directivas_Logicas": {
+        "look-at-mouse": "15"
+    },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": -300,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
+    "Hijos": [
+        {
+            "id": "cuerpo_telefono",
+            "Propiedades_Esteticas": {
+                "width": "320px",
+                "height": "650px",
+                "background": "#1e1e1e",
+                "borderRadius": "40px",
+                "boxShadow": "0 20px 50px rgba(0,0,0,0.8), inset 0 0 0 4px #444, inset 0 0 0 8px #000",
+                "position": "relative",
+                "display": "flex",
+                "flexDirection": "column",
+                "alignItems": "center",
+                "padding": "15px",
+                "boxSizing": "border-box"
+            },
+            "Directivas_Logicas": {
+                "mouse-follow": "30"
+            },
+            "Transform_Base": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "rx": 0,
+                "ry": 0,
+                "rz": 0,
+                "scale": 1
+            },
+            "Hijos": [
+                {
+                    "id": "notch",
+                    "Propiedades_Esteticas": {
+                        "width": "120px",
+                        "height": "25px",
+                        "background": "#000",
+                        "borderRadius": "0 0 15px 15px",
+                        "position": "absolute",
+                        "top": "15px",
+                        "zIndex": "10"
+                    },
+                    "Transform_Base": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 2,
+                        "rx": 0,
+                        "ry": 0,
+                        "rz": 0,
+                        "scale": 1
+                    }
+                },
+                {
+                    "id": "pantalla_telefono",
+                    "Propiedades_Esteticas": {
+                        "width": "100%",
+                        "height": "100%",
+                        "background": "linear-gradient(135deg, #1cb5e0 0%, #000851 100%)",
+                        "borderRadius": "30px",
+                        "overflow": "hidden",
+                        "position": "relative",
+                        "display": "flex",
+                        "flexDirection": "column"
+                    },
+                    "Transform_Base": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1,
+                        "rx": 0,
+                        "ry": 0,
+                        "rz": 0,
+                        "scale": 1
+                    },
+                    "Hijos": [
+                        {
+                            "id": "barra_estado",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "height": "30px",
+                                "display": "flex",
+                                "justifyContent": "space-between",
+                                "alignItems": "center",
+                                "padding": "0 20px",
+                                "boxSizing": "border-box",
+                                "color": "#fff",
+                                "fontSize": "12px",
+                                "fontFamily": "sans-serif",
+                                "fontWeight": "bold"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 0,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            }
+                        },
+                        {
+                            "id": "reloj_widget",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "marginTop": "40px",
+                                "textAlign": "center",
+                                "color": "white",
+                                "fontSize": "48px",
+                                "fontFamily": "sans-serif",
+                                "fontWeight": "300",
+                                "position": "relative"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 10,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            }
+                        },
+                        {
+                            "id": "rejilla_apps",
+                            "App_Logic": "OS_Launcher",
+                            "Propiedades_Esteticas": {
+                                "width": "100%",
+                                "flex": "1",
+                                "display": "flex",
+                                "flexWrap": "wrap",
+                                "justifyContent": "space-around",
+                                "alignContent": "flex-start",
+                                "padding": "20px",
+                                "boxSizing": "border-box",
+                                "gap": "15px"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 5,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            },
+                            "Hijos": []
+                        },
+                        {
+                            "id": "dock_apps",
+                            "Propiedades_Esteticas": {
+                                "width": "90%",
+                                "height": "80px",
+                                "background": "rgba(255, 255, 255, 0.2)",
+                                "borderRadius": "25px",
+                                "margin": "0 auto 10px auto",
+                                "backdropFilter": "blur(15px)",
+                                "display": "flex",
+                                "justifyContent": "space-around",
+                                "alignItems": "center",
+                                "padding": "0 10px",
+                                "boxSizing": "border-box",
+                                "position": "absolute",
+                                "bottom": "15px",
+                                "left": "5%"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 10,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            },
+                            "Hijos": [
+                                {
+                                    "id": "dock_telefono",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #0ba360 0%, #3cba92 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_tel",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\udcde"
+                                        }
+                                    ],
+                                    "App_Logic": "AppLauncher",
+                                    "app_json": "app_view_telefono.json"
+                                },
+                                {
+                                    "id": "dock_mensajes",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #38f9d7 0%, #43e97b 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_msj",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\udcac"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "dock_correo",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_mail",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83d\udce7"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "dock_musica",
+                                    "Propiedades_Esteticas": {
+                                        "width": "50px",
+                                        "height": "50px",
+                                        "background": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                                        "borderRadius": "12px",
+                                        "position": "relative",
+                                        "display": "flex",
+                                        "justifyContent": "center",
+                                        "alignItems": "center",
+                                        "boxShadow": "0 4px 10px rgba(0,0,0,0.2)"
+                                    },
+                                    "Directivas_Logicas": {
+                                        "mouse-follow": "-10"
+                                    },
+                                    "Transform_Base": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "z": 5,
+                                        "rx": 0,
+                                        "ry": 0,
+                                        "rz": 0,
+                                        "scale": 1
+                                    },
+                                    "Hijos": [
+                                        {
+                                            "id": "txt_musica",
+                                            "Propiedades_Esteticas": {
+                                                "color": "#ffffff",
+                                                "fontSize": "22px",
+                                                "position": "relative"
+                                            },
+                                            "Hijos": [],
+                                            "innerHTML": "\ud83c\udfb5"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "home_button",
+                            "Propiedades_Esteticas": {
+                                "width": "100px",
+                                "height": "5px",
+                                "background": "rgba(255,255,255,0.6)",
+                                "borderRadius": "5px",
+                                "position": "absolute",
+                                "bottom": "10px",
+                                "left": "50%",
+                                "transform": "translateX(-50%)",
+                                "cursor": "pointer",
+                                "zIndex": "100"
+                            },
+                            "Transform_Base": {
+                                "x": 0,
+                                "y": 0,
+                                "z": 20,
+                                "rx": 0,
+                                "ry": 0,
+                                "rz": 0,
+                                "scale": 1
+                            },
+                            "App_Logic": "HomeButton"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

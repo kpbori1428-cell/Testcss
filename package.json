@@ -1,0 +1,12 @@
+{
+  "name": "telefono-3d",
+  "version": "1.0.0",
+  "description": "Motor de Renderizado Espacial Basado en Datos (V4) - Teléfono Inteligente",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

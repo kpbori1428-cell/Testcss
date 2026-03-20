@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
+    <title>Motor de Renderizado Espacial Basado en Datos (V4)</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #app {
+            flex: 1;
+            height: 100%;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            position: relative;
+            pointer-events: none;
+        }
+
+        /* Asegurar que los nodos tengan comportamiento transformable por defecto */
+        .node {
+            position: absolute;
+            transform-style: preserve-3d;
+            transform-origin: center center;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="module">
+        import { initEngine } from './engine.js';
+
+        // Registrar Service Worker para el motor proxy del Navegador 3D
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registrado con scope:', reg.scope))
+                .catch(err => console.log('Error registrando Service Worker:', err));
+        }
+
+        // Load data.json on startup unconditionally
+        initEngine('./data.json');
+    </script>
+</body>
+</html>

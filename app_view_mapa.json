@@ -1,0 +1,44 @@
+{
+    "id": "app_view_mapa",
+    "App_Logic": "Mapa",
+    "Propiedades_Esteticas": {
+        "width": "100%",
+        "flex": "1",
+        "backgroundColor": "#e0e0e0",
+        "overflow": "hidden",
+        "position": "absolute",
+        "height": "100%",
+        "top": "0",
+        "left": "0"
+    },
+    "Transform_Base": {
+        "x": 0,
+        "y": 0,
+        "z": 5,
+        "rx": 0,
+        "ry": 0,
+        "rz": 0,
+        "scale": 1
+    },
+    "Hijos": [
+        {
+            "id": "mapa_contenedor",
+            "Propiedades_Esteticas": {
+                "width": "100%",
+                "height": "100%",
+                "position": "absolute",
+                "left": "0",
+                "top": "0"
+            },
+            "Transform_Base": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "rx": 0,
+                "ry": 0,
+                "rz": 0,
+                "scale": 1
+            }
+        }
+    ]
+}
