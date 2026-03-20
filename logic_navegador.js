@@ -28,22 +28,12 @@ export class NavegadorLogic {
                 const urlInput = document.getElementById("nav-url-input");
                 const iframe = document.getElementById("nav-iframe");
 
-                // Esperar a que el Service Worker esté activo antes de navegar
                 const loadUrl = (url) => {
                     // Limpiar el srcdoc en caso de que viniéramos del modo avión
                     if (iframe.hasAttribute("srcdoc")) {
                         iframe.removeAttribute("srcdoc");
                     }
-
-                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                        iframe.src = `/sw/${url}`;
-                    } else {
-                        // Si el Service Worker no está listo aún, esperamos a que esté activo
-                        console.log("[Navegador] Esperando que el Service Worker esté listo...");
-                        navigator.serviceWorker.ready.then(() => {
-                            iframe.src = `/sw/${url}`;
-                        });
-                    }
+                    iframe.src = url;
                 };
 
                 // Carga inicial
@@ -53,15 +43,6 @@ export class NavegadorLogic {
                 } else {
                     loadUrl("https://eficell.cl");
                 }
-
-                // Remove interaction listeners since we are locking it to eficell.cl
-
-                // Actualizar la URL de la barra de búsqueda cuando el iframe navega (interceptado por sw postMessage)
-                window.addEventListener('message', (e) => {
-                    if(e.data && e.data.type === 'nav-update' && e.data.url) {
-                        urlInput.value = e.data.url;
-                    }
-                });
             }
         }, 100);
     }
