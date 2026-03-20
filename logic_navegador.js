@@ -16,8 +16,8 @@ export class NavegadorLogic {
 
             if (barraNode && barraNode.domElement && webviewNode && webviewNode.domElement) {
                 barraNode.domElement.innerHTML = `
-                    <input type="text" id="nav-url-input" value="https://example.com" style="flex:1; border:none; outline:none; font-family: sans-serif; background: transparent; pointer-events: auto;">
-                    <button id="nav-go-btn" style="border:none; background: #007bff; color:white; border-radius: 10px; padding: 5px 10px; cursor: pointer; pointer-events: auto;">Ir</button>
+                    <input type="text" id="nav-url-input" value="https://eficell.cl" readonly style="flex:1; border:none; outline:none; font-family: sans-serif; background: transparent; pointer-events: none; color: gray;">
+                    <button id="nav-go-btn" style="border:none; background: #ccc; color:white; border-radius: 10px; padding: 5px 10px; cursor: not-allowed; pointer-events: none;">Ir</button>
                 `;
 
                 webviewNode.domElement.innerHTML = `
@@ -47,28 +47,14 @@ export class NavegadorLogic {
                 };
 
                 // Carga inicial
-                loadUrl("https://example.com");
+                if (window.SistemaOperativo && window.SistemaOperativo.modoAvion) {
+                    iframe.srcdoc = "<h2 style='font-family:sans-serif; text-align:center; margin-top: 50px;'>Sin Conexión: Modo Avión Activado</h2>";
+                    iframe.removeAttribute("src");
+                } else {
+                    loadUrl("https://eficell.cl");
+                }
 
-                goBtn.addEventListener("click", () => {
-                    let url = urlInput.value.trim();
-                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                        url = 'https://' + url;
-                    }
-                    urlInput.value = url; // Sincronizar vista de la barra
-
-                    if (window.SistemaOperativo && window.SistemaOperativo.modoAvion) {
-                        iframe.srcdoc = "<h2 style='font-family:sans-serif; text-align:center; margin-top: 50px;'>Sin Conexión: Modo Avión Activado</h2>";
-                        iframe.removeAttribute("src");
-                    } else {
-                        loadUrl(url);
-                    }
-                });
-
-                urlInput.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter") {
-                        goBtn.click();
-                    }
-                });
+                // Remove interaction listeners since we are locking it to eficell.cl
 
                 // Actualizar la URL de la barra de búsqueda cuando el iframe navega (interceptado por sw postMessage)
                 window.addEventListener('message', (e) => {

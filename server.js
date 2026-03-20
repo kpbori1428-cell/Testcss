@@ -60,71 +60,92 @@ app.all('/proxy', (req, res) => {
         rejectUnauthorized: false // Bypass cert errors in local tests
     };
 
-    const proxyReq = protocol.request(targetUrl, options, (proxyRes) => {
-        // Forward the original status code
-        res.status(proxyRes.statusCode);
+    const makeRequest = (currentUrl, redirectCount = 0) => {
+        if (redirectCount > 5) {
+            return res.status(508).send('Too many redirects');
+        }
 
-        // Forward headers except for those that break iframes
-        for (const [key, value] of Object.entries(proxyRes.headers)) {
-            const lowerKey = key.toLowerCase();
-            if (lowerKey !== 'x-frame-options' && lowerKey !== 'content-security-policy') {
-                res.setHeader(key, value);
+        const currentProtocol = currentUrl.startsWith('https') ? https : http;
+        const proxyReq = currentProtocol.request(currentUrl, options, (proxyRes) => {
+            // Manejo de Redirecciones (301, 302, 303, 307, 308)
+            if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400 && proxyRes.headers.location) {
+                // Resolver URL relativa en caso de redirecciones como location: /path
+                let redirectUrl = proxyRes.headers.location;
+                if (!redirectUrl.startsWith('http')) {
+                    const parsedCurrent = new URL(currentUrl);
+                    redirectUrl = parsedCurrent.origin + redirectUrl;
+                }
+                console.log(`[Proxy] Redirección detectada: ${currentUrl} -> ${redirectUrl}`);
+                return makeRequest(redirectUrl, redirectCount + 1);
             }
-        }
 
-        // Ensure CORS and default content-type
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        res.setHeader('Access-Control-Allow-Headers', '*');
-        const contentType = proxyRes.headers['content-type'] || 'application/octet-stream';
-        res.setHeader('Content-Type', contentType);
+            // Forward the original status code
+            res.status(proxyRes.statusCode);
 
-        // Si es HTML, necesitamos bufferizar para inyectar DOCTYPE si falta (Quirks Mode fix)
-        // Y reescribir URLs absolutas para que pasen por el proxy
-        if (contentType.includes('text/html') || contentType.includes('text/css') || contentType.includes('application/javascript')) {
-             let data = '';
+            // Forward headers except for those that break iframes
+            for (const [key, value] of Object.entries(proxyRes.headers)) {
+                const lowerKey = key.toLowerCase();
+                if (lowerKey !== 'x-frame-options' && lowerKey !== 'content-security-policy') {
+                    res.setHeader(key, value);
+                }
+            }
 
-             proxyRes.on('data', (chunk) => {
-                 data += chunk;
-             });
+            // Ensure CORS and default content-type
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            res.setHeader('Access-Control-Allow-Headers', '*');
+            const contentType = proxyRes.headers['content-type'] || 'application/octet-stream';
+            res.setHeader('Content-Type', contentType);
 
-             proxyRes.on('end', () => {
-                 if (contentType.includes('text/html')) {
-                     const headStr = data.substring(0, 100).toLowerCase();
-                     if (!headStr.includes('<!doctype html>')) {
-                         data = '<!DOCTYPE html>\n' + data;
+            // Si es HTML, necesitamos bufferizar para inyectar DOCTYPE si falta (Quirks Mode fix)
+            // Y reescribir URLs absolutas para que pasen por el proxy
+            if (contentType.includes('text/html') || contentType.includes('text/css') || contentType.includes('application/javascript')) {
+                 let data = '';
+
+                 proxyRes.on('data', (chunk) => {
+                     data += chunk;
+                 });
+
+                 proxyRes.on('end', () => {
+                     if (contentType.includes('text/html')) {
+                         const headStr = data.substring(0, 100).toLowerCase();
+                         if (!headStr.includes('<!doctype html>')) {
+                             data = '<!DOCTYPE html>\n' + data;
+                         }
+                         // Rewrite relative paths for typical assets like src="/showcase.css" to the targetUrl origin
+                         const urlObj = new URL(currentUrl); // Use final resolved URL
+                         const origin = urlObj.origin;
+
+                         // Inject a base tag
+                         if (data.includes('<head>')) {
+                            data = data.replace('<head>', `<head><base href="${origin}/">`);
+                         } else if (data.includes('<HEAD>')) {
+                            data = data.replace('<HEAD>', `<HEAD><base href="${origin}/">`);
+                         }
                      }
-                     // Rewrite relative paths for typical assets like src="/showcase.css" to the targetUrl origin
-                     const urlObj = new URL(targetUrl);
-                     const origin = urlObj.origin;
+                     res.send(data);
+                 });
+            } else {
+                // Para cualquier otro archivo (JS, CSS, Imágenes, Videos, Binarios), NO bufferizar como string.
+                // Transmitir directamente por tubería (pipe) para ahorrar RAM y no corromper los binarios.
+                proxyRes.pipe(res);
+            }
+        });
 
-                     // Inject a base tag
-                     if (data.includes('<head>')) {
-                        data = data.replace('<head>', `<head><base href="${origin}/">`);
-                     } else if (data.includes('<HEAD>')) {
-                        data = data.replace('<HEAD>', `<HEAD><base href="${origin}/">`);
-                     }
-                 }
-                 res.send(data);
-             });
+        proxyReq.on('error', (err) => {
+            console.error('Proxy Error:', err.message);
+            res.status(500).send('Error fetching URL: ' + err.message);
+        });
+
+        // Pipe the request body if it's a POST/PUT
+        if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+            req.pipe(proxyReq);
         } else {
-            // Para cualquier otro archivo (JS, CSS, Imágenes, Videos, Binarios), NO bufferizar como string.
-            // Transmitir directamente por tubería (pipe) para ahorrar RAM y no corromper los binarios.
-            proxyRes.pipe(res);
+            proxyReq.end();
         }
-    });
+    };
 
-    proxyReq.on('error', (err) => {
-        console.error('Proxy Error:', err.message);
-        res.status(500).send('Error fetching URL: ' + err.message);
-    });
-
-    // Pipe the request body if it's a POST/PUT
-    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
-        req.pipe(proxyReq);
-    } else {
-        proxyReq.end();
-    }
+    makeRequest(targetUrl);
 });
 
 app.listen(port, () => {

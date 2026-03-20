@@ -68,10 +68,29 @@ self.addEventListener('fetch', (event) => {
     }
 
     if (targetUrl) {
-        // No proxificamos requests a google fonts directamente, a veces rompen el woff2
-        if (targetUrl.includes('fonts.googleapis.com') || targetUrl.includes('fonts.gstatic.com')) {
-            return;
-        }
+        // Restringir el proxy SOLO a eficell.cl y sus dependencias de diseño conocidas,
+        // esto evita proxificar requests a Google, Firebase u otros dominios que fallan o bloquean IPs.
+        try {
+            const parsedTarget = new URL(targetUrl);
+            const isEficell = parsedTarget.hostname.includes('eficell.cl');
+            // Allow fonts, images, etc. to pass through the proxy only if they are related to the site content
+            // However, we shouldn't proxy fonts or third party APIs to avoid CORS breaks or woff2 corruption.
+            if (!isEficell) {
+                // If it's an external API or font, don't proxy it. The browser handles it natively better (if CORS permits).
+                // Or if we must proxy it to bypass CORS, we do it, but we don't do it for domains like google.com
+                if (parsedTarget.hostname.includes('google.com') ||
+                    parsedTarget.hostname.includes('googleapis.com') ||
+                    parsedTarget.hostname.includes('gstatic.com') ||
+                    parsedTarget.hostname.includes('firebasestorage.googleapis.com')) {
+
+                    // Actually, eficell needs firebasestorage JSON which is blocked by CORS. We MUST proxy it.
+                    // Let's only ignore google/fonts stuff
+                    if (!parsedTarget.hostname.includes('firebasestorage.googleapis.com')) {
+                        return; // Let the browser handle these directly
+                    }
+                }
+            }
+        } catch(e) {}
 
         // Enviamos la petición reconstruida a nuestro proxy local que hace el Header Stripping
         const proxyUrl = `/proxy?url=${encodeURIComponent(targetUrl)}`;
