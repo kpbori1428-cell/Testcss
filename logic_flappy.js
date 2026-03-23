@@ -14,6 +14,7 @@ export class FlappyLogic {
         this.gravity = 1500; // pixels per second squared
         this.jumpForce = -450;
         this.gameActive = false;
+        this.isGameOver = false;
         this.score = 0;
 
         this.pipes = [];
@@ -45,6 +46,12 @@ export class FlappyLogic {
 
     onUnmount() {
         EngineTicker.unsubscribe(this.updateCallback);
+        // Clean up any dynamic pipes to avoid memory leaks if OS unmounts app
+        const pipesContainer = RenderNode.registry.get(this.pipesContainerPath);
+        if (pipesContainer && pipesContainer.domElement) {
+            pipesContainer.domElement.innerHTML = '';
+        }
+        this.pipes = [];
     }
 
     // Engine automatically binds this to the root node if it exists
@@ -53,6 +60,8 @@ export class FlappyLogic {
     }
 
     jump() {
+        if (this.isGameOver) return; // Prevent jumping when game over screen is shown
+
         if (!this.gameActive && this.birdY < 400) {
             // Start game on first click
             this.gameActive = true;
@@ -125,23 +134,41 @@ export class FlappyLogic {
         pipeWrapper.style.width = `${this.pipeWidth}px`;
         pipeWrapper.style.height = '100%';
 
-        const topPipe = document.createElement('div');
-        topPipe.style.position = 'absolute';
-        topPipe.style.top = '0';
-        topPipe.style.width = '100%';
-        topPipe.style.height = `${topHeight}px`;
-        topPipe.style.background = '#73bf2e';
-        topPipe.style.border = '3px solid #543847';
-        topPipe.style.borderTop = 'none';
+        // Estilo común para tuberías
+        const crearTuberia = (isTop, altura) => {
+            const tubo = document.createElement('div');
+            tubo.style.position = 'absolute';
+            tubo.style.width = '100%';
+            tubo.style.height = `${altura}px`;
+            tubo.style.background = 'linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)';
+            tubo.style.border = '3px solid #543847';
 
-        const bottomPipe = document.createElement('div');
-        bottomPipe.style.position = 'absolute';
-        bottomPipe.style.bottom = '0';
-        bottomPipe.style.width = '100%';
-        bottomPipe.style.height = `${containerHeight - topHeight - this.pipeGap}px`;
-        bottomPipe.style.background = '#73bf2e';
-        bottomPipe.style.border = '3px solid #543847';
-        bottomPipe.style.borderBottom = 'none';
+            // Borde grueso / tapa
+            const tapa = document.createElement('div');
+            tapa.style.position = 'absolute';
+            tapa.style.width = '110%';
+            tapa.style.height = '20px';
+            tapa.style.left = '-5%';
+            tapa.style.background = 'linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)';
+            tapa.style.border = '3px solid #543847';
+            tapa.style.boxSizing = 'border-box';
+
+            if (isTop) {
+                tubo.style.top = '0';
+                tubo.style.borderTop = 'none';
+                tapa.style.bottom = '-3px';
+            } else {
+                tubo.style.bottom = '0';
+                tubo.style.borderBottom = 'none';
+                tapa.style.top = '-3px';
+            }
+
+            tubo.appendChild(tapa);
+            return tubo;
+        };
+
+        const topPipe = crearTuberia(true, topHeight);
+        const bottomPipe = crearTuberia(false, containerHeight - topHeight - this.pipeGap);
 
         pipeWrapper.appendChild(topPipe);
         pipeWrapper.appendChild(bottomPipe);
@@ -162,11 +189,14 @@ export class FlappyLogic {
         }
     }
 
-    update() {
+    update(dt) {
         if (!this.gameActive) return;
 
-        // Ticker provides roughly 16ms delta, convert to seconds
-        const dt = 1/60;
+        // Use real DeltaTime from engine, fallback to 1/60 if not provided
+        dt = dt || 0.016;
+
+        // Limit dt to prevent massive jumps if tab was inactive
+        if (dt > 0.05) dt = 0.05;
 
         // Physics
         this.velocity += this.gravity * dt;
@@ -179,6 +209,19 @@ export class FlappyLogic {
         if (birdNode && birdNode.domElement) {
             birdNode.domElement.style.top = `${this.birdY}px`;
             birdNode.domElement.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        // Animar suelo y nubes
+        const sueloNode = RenderNode.registry.get(`${this.node.path}.suelo`);
+        if (sueloNode && sueloNode.domElement) {
+            const currentPos = parseFloat(sueloNode.domElement.style.backgroundPositionX || 0);
+            sueloNode.domElement.style.backgroundPositionX = `${currentPos - (this.pipeSpeed * dt)}px`;
+        }
+
+        const nubesNode = RenderNode.registry.get(`${this.node.path}.nubes`);
+        if (nubesNode && nubesNode.domElement) {
+            const currentPos = parseFloat(nubesNode.domElement.style.backgroundPositionX || 0);
+            nubesNode.domElement.style.backgroundPositionX = `${currentPos - (this.pipeSpeed * 0.2 * dt)}px`;
         }
 
         const pipesContainer = RenderNode.registry.get(this.pipesContainerPath);
@@ -217,12 +260,14 @@ export class FlappyLogic {
                 pipe.element.style.left = `${pipe.x}px`;
             }
 
-            // AABB Collision Check
+            // AABB Collision Check with slight padding (forgiveness)
+            const paddingX = 4;
+            const paddingY = 4;
             const birdRect = {
-                left: 50,
-                right: 50 + 34,
-                top: this.birdY,
-                bottom: this.birdY + 24
+                left: 50 + paddingX,
+                right: 50 + 34 - paddingX,
+                top: this.birdY + paddingY,
+                bottom: this.birdY + 24 - paddingY
             };
 
             const pipeRect = {
