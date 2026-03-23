@@ -103,7 +103,13 @@ export class FlappyLogic {
 
         const pipesContainer = RenderNode.registry.get(this.pipesContainerPath);
         if (pipesContainer && pipesContainer.domElement) {
-            pipesContainer.domElement.innerHTML = ''; // Clear DOM pipes
+            // Clean up old V4 RenderNodes properly instead of just innerHTML
+            for (const pipeData of this.pipes) {
+                if (pipeData.renderNode) {
+                    pipeData.renderNode.unmount();
+                }
+            }
+            pipesContainer.children = [];
         }
     }
 
@@ -126,59 +132,88 @@ export class FlappyLogic {
 
         const pipeX = pipesContainer.domElement.clientWidth;
 
-        // Create DOM elements for top and bottom pipes
-        const pipeWrapper = document.createElement('div');
-        pipeWrapper.style.position = 'absolute';
-        pipeWrapper.style.left = `${pipeX}px`;
-        pipeWrapper.style.top = '0';
-        pipeWrapper.style.width = `${this.pipeWidth}px`;
-        pipeWrapper.style.height = '100%';
+        const pipeId = `pipe_${Math.random().toString(36).substr(2, 9)}`;
 
-        // Estilo común para tuberías
-        const crearTuberia = (isTop, altura) => {
-            const tubo = document.createElement('div');
-            tubo.style.position = 'absolute';
-            tubo.style.width = '100%';
-            tubo.style.height = `${altura}px`;
-            tubo.style.background = 'linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)';
-            tubo.style.border = '3px solid #543847';
-
-            // Borde grueso / tapa
-            const tapa = document.createElement('div');
-            tapa.style.position = 'absolute';
-            tapa.style.width = '110%';
-            tapa.style.height = '20px';
-            tapa.style.left = '-5%';
-            tapa.style.background = 'linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)';
-            tapa.style.border = '3px solid #543847';
-            tapa.style.boxSizing = 'border-box';
-
-            if (isTop) {
-                tubo.style.top = '0';
-                tubo.style.borderTop = 'none';
-                tapa.style.bottom = '-3px';
-            } else {
-                tubo.style.bottom = '0';
-                tubo.style.borderBottom = 'none';
-                tapa.style.top = '-3px';
-            }
-
-            tubo.appendChild(tapa);
-            return tubo;
+        // Generar la tubería formalmente como un V4 JSON Node Data
+        const pipeData = {
+            "id": pipeId,
+            "Propiedades_Esteticas": {
+                "position": "absolute",
+                "left": `${pipeX}px`,
+                "top": "0",
+                "width": `${this.pipeWidth}px`,
+                "height": "100%"
+            },
+            "Hijos": [
+                {
+                    "id": `top_${pipeId}`,
+                    "Propiedades_Esteticas": {
+                        "position": "absolute",
+                        "top": "0",
+                        "width": "100%",
+                        "height": `${topHeight}px`,
+                        "background": "linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)",
+                        "border": "3px solid #543847",
+                        "borderTop": "none",
+                        "boxSizing": "border-box"
+                    },
+                    "Hijos": [
+                        {
+                            "id": `cap_top_${pipeId}`,
+                            "Propiedades_Esteticas": {
+                                "position": "absolute",
+                                "width": "110%",
+                                "height": "20px",
+                                "left": "-5%",
+                                "bottom": "-3px",
+                                "background": "linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)",
+                                "border": "3px solid #543847",
+                                "boxSizing": "border-box"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": `bottom_${pipeId}`,
+                    "Propiedades_Esteticas": {
+                        "position": "absolute",
+                        "bottom": "0",
+                        "width": "100%",
+                        "height": `${containerHeight - topHeight - this.pipeGap}px`,
+                        "background": "linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)",
+                        "border": "3px solid #543847",
+                        "borderBottom": "none",
+                        "boxSizing": "border-box"
+                    },
+                    "Hijos": [
+                        {
+                            "id": `cap_bottom_${pipeId}`,
+                            "Propiedades_Esteticas": {
+                                "position": "absolute",
+                                "width": "110%",
+                                "height": "20px",
+                                "left": "-5%",
+                                "top": "-3px",
+                                "background": "linear-gradient(90deg, #73bf2e 0%, #90d645 20%, #73bf2e 100%)",
+                                "border": "3px solid #543847",
+                                "boxSizing": "border-box"
+                            }
+                        }
+                    ]
+                }
+            ]
         };
 
-        const topPipe = crearTuberia(true, topHeight);
-        const bottomPipe = crearTuberia(false, containerHeight - topHeight - this.pipeGap);
-
-        pipeWrapper.appendChild(topPipe);
-        pipeWrapper.appendChild(bottomPipe);
-        pipesContainer.domElement.appendChild(pipeWrapper);
+        // Instanciar el Nodo formalmente y agregarlo al árbol V4
+        const pipeNode = new RenderNode(pipeData, pipesContainer.domElement, pipesContainer.path, pipesContainer.level + 1, pipesContainer.children.length);
+        pipeNode.mount();
+        pipesContainer.children.push(pipeNode);
 
         this.pipes.push({
             x: pipeX,
             topHeight: topHeight,
             passed: false,
-            element: pipeWrapper
+            renderNode: pipeNode
         });
     }
 
@@ -256,8 +291,8 @@ export class FlappyLogic {
             const pipe = this.pipes[i];
             pipe.x -= this.pipeSpeed * dt;
 
-            if (pipe.element) {
-                pipe.element.style.left = `${pipe.x}px`;
+            if (pipe.renderNode && pipe.renderNode.domElement) {
+                pipe.renderNode.domElement.style.left = `${pipe.x}px`;
             }
 
             // AABB Collision Check with slight padding (forgiveness)
@@ -290,10 +325,15 @@ export class FlappyLogic {
                 this.updateScoreDisplay();
             }
 
-            // Cleanup off-screen pipes
+            // Cleanup off-screen pipes via V4 Unmount
             if (pipe.x + this.pipeWidth < 0) {
-                if (pipe.element && pipe.element.parentNode) {
-                    pipe.element.parentNode.removeChild(pipe.element);
+                if (pipe.renderNode) {
+                    pipe.renderNode.unmount();
+                    // Remove from parent children array to fully release memory
+                    if (pipesContainer && pipesContainer.children) {
+                        const index = pipesContainer.children.indexOf(pipe.renderNode);
+                        if (index > -1) pipesContainer.children.splice(index, 1);
+                    }
                 }
                 this.pipes.splice(i, 1);
             }
