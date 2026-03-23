@@ -1,6 +1,6 @@
 {
     "id": "app_view_flappy",
-    "App_Logic": "FlappyLogic",
+    "App_Logic": "Flappy",
     "Propiedades_Esteticas": {
         "width": "100%",
         "flex": "1",
