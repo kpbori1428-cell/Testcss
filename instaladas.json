@@ -23,5 +23,10 @@
         "icon_json": "app_icon_navegador.json",
         "logic_js": "logic_navegador.js",
         "logic_class": "NavegadorLogic"
+    },
+    "flappy": {
+        "icon_json": "app_icon_flappy.json",
+        "logic_js": "logic_flappy.js",
+        "logic_class": "FlappyLogic"
     }
 }
