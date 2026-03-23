@@ -6,7 +6,7 @@ export class FlappyLogic {
         this.birdNodePath = `${this.node.path}.pajaro`;
         this.scorePath = `${this.node.path}.puntuacion`;
         this.gameOverPath = `${this.node.path}.pantalla_gameover`;
-        this.restartBtnPath = `${this.node.path}.pantalla_gameover.btn_reiniciar`;
+        this.restartBtnPath = `${this.node.path}.pantalla_gameover.caja_gameover.btn_reiniciar`;
         this.pipesContainerPath = `${this.node.path}.tuberias_contenedor`;
 
         this.birdY = 200;
@@ -48,8 +48,8 @@ export class FlappyLogic {
         EngineTicker.unsubscribe(this.updateCallback);
         // Clean up any dynamic pipes to avoid memory leaks if OS unmounts app
         const pipesContainer = RenderNode.registry.get(this.pipesContainerPath);
-        if (pipesContainer && pipesContainer.domElement) {
-            pipesContainer.domElement.innerHTML = '';
+        if (pipesContainer) {
+            pipesContainer.aplicarParche({ Hijos: [] });
         }
         this.pipes = [];
     }
@@ -66,17 +66,20 @@ export class FlappyLogic {
             // Start game on first click
             this.gameActive = true;
             const goNode = RenderNode.registry.get(this.gameOverPath);
-            if (goNode) goNode.domElement.style.display = 'none';
+            if (goNode) {
+                goNode.aplicarParche({ Propiedades_Esteticas: { display: 'none' } });
+            }
         }
 
         if (this.gameActive) {
             this.velocity = this.jumpForce;
-            // Add a little flap animation using CSS
+            // Add a little flap animation using the engine's data-driven approach
             const ala = RenderNode.registry.get(`${this.birdNodePath}.ala_pajaro`);
             if (ala) {
-                ala.domElement.style.transform = 'translateY(-4px)';
+                ala.aplicarParche({ Transform_Base: { y: -4 } });
                 setTimeout(() => {
-                    if (ala && ala.domElement) ala.domElement.style.transform = 'translateY(0)';
+                    const alaCurrent = RenderNode.registry.get(`${this.birdNodePath}.ala_pajaro`);
+                    if (alaCurrent) alaCurrent.aplicarParche({ Transform_Base: { y: 0 } });
                 }, 100);
             }
         }
@@ -87,6 +90,7 @@ export class FlappyLogic {
         this.velocity = 0;
         this.score = 0;
         this.gameActive = false;
+        this.isGameOver = false;
         this.pipes = [];
         this.spawnTimer = 0;
 
@@ -94,30 +98,32 @@ export class FlappyLogic {
 
         const birdNode = RenderNode.registry.get(this.birdNodePath);
         if (birdNode) {
-            birdNode.domElement.style.top = `${this.birdY}px`;
-            birdNode.domElement.style.transform = `rotate(0deg)`;
+            birdNode.aplicarParche({
+                Propiedades_Esteticas: { top: `${this.birdY}px` },
+                Transform_Base: { rz: 0 }
+            });
         }
 
         const goNode = RenderNode.registry.get(this.gameOverPath);
-        if (goNode) goNode.domElement.style.display = 'none';
+        if (goNode) {
+            goNode.aplicarParche({ Propiedades_Esteticas: { display: 'none' } });
+        }
 
         const pipesContainer = RenderNode.registry.get(this.pipesContainerPath);
-        if (pipesContainer && pipesContainer.domElement) {
-            // Clean up old V4 RenderNodes properly instead of just innerHTML
-            for (const pipeData of this.pipes) {
-                if (pipeData.renderNode) {
-                    pipeData.renderNode.unmount();
-                }
-            }
-            pipesContainer.children = [];
+        if (pipesContainer) {
+            // Unmount all dynamically added pipe children purely via the data model
+            pipesContainer.aplicarParche({ Hijos: [] });
         }
     }
 
     gameOver() {
         if (!this.gameActive) return;
         this.gameActive = false;
+        this.isGameOver = true;
         const goNode = RenderNode.registry.get(this.gameOverPath);
-        if (goNode) goNode.domElement.style.display = 'block';
+        if (goNode) {
+            goNode.aplicarParche({ Propiedades_Esteticas: { display: 'flex' } });
+        }
     }
 
     spawnPipe() {
@@ -204,23 +210,23 @@ export class FlappyLogic {
             ]
         };
 
-        // Instanciar el Nodo formalmente y agregarlo al árbol V4
-        const pipeNode = new RenderNode(pipeData, pipesContainer.domElement, pipesContainer.path, pipesContainer.level + 1, pipesContainer.children.length);
-        pipeNode.mount();
-        pipesContainer.children.push(pipeNode);
+        // Inject the pipe purely through data manipulation
+        // We push to the current children data array and patch
+        const nuevosHijos = [...pipesContainer.hijosDatos, pipeData];
+        pipesContainer.aplicarParche({ Hijos: nuevosHijos });
 
         this.pipes.push({
+            id: pipeId,
             x: pipeX,
             topHeight: topHeight,
-            passed: false,
-            renderNode: pipeNode
+            passed: false
         });
     }
 
     updateScoreDisplay() {
         const scoreNode = RenderNode.registry.get(this.scorePath);
-        if (scoreNode && scoreNode.domElement) {
-            scoreNode.domElement.innerText = this.score;
+        if (scoreNode) {
+            scoreNode.aplicarParche({ innerHTML: this.score.toString() });
         }
     }
 
@@ -241,22 +247,24 @@ export class FlappyLogic {
         let rotation = Math.min(Math.max(this.velocity * 0.1, -25), 90);
 
         const birdNode = RenderNode.registry.get(this.birdNodePath);
-        if (birdNode && birdNode.domElement) {
-            birdNode.domElement.style.top = `${this.birdY}px`;
-            birdNode.domElement.style.transform = `rotate(${rotation}deg)`;
+        if (birdNode) {
+            birdNode.aplicarParche({
+                Propiedades_Esteticas: { top: `${this.birdY}px` },
+                Transform_Base: { rz: rotation }
+            });
         }
 
         // Animar suelo y nubes
         const sueloNode = RenderNode.registry.get(`${this.node.path}.suelo`);
-        if (sueloNode && sueloNode.domElement) {
-            const currentPos = parseFloat(sueloNode.domElement.style.backgroundPositionX || 0);
-            sueloNode.domElement.style.backgroundPositionX = `${currentPos - (this.pipeSpeed * dt)}px`;
+        if (sueloNode && sueloNode.propiedadesEsteticas) {
+            const currentPos = parseFloat(sueloNode.propiedadesEsteticas.backgroundPositionX || 0);
+            sueloNode.aplicarParche({ Propiedades_Esteticas: { backgroundPositionX: `${currentPos - (this.pipeSpeed * dt)}px` } });
         }
 
         const nubesNode = RenderNode.registry.get(`${this.node.path}.nubes`);
-        if (nubesNode && nubesNode.domElement) {
-            const currentPos = parseFloat(nubesNode.domElement.style.backgroundPositionX || 0);
-            nubesNode.domElement.style.backgroundPositionX = `${currentPos - (this.pipeSpeed * 0.2 * dt)}px`;
+        if (nubesNode && nubesNode.propiedadesEsteticas) {
+            const currentPos = parseFloat(nubesNode.propiedadesEsteticas.backgroundPositionX || 0);
+            nubesNode.aplicarParche({ Propiedades_Esteticas: { backgroundPositionX: `${currentPos - (this.pipeSpeed * 0.2 * dt)}px` } });
         }
 
         const pipesContainer = RenderNode.registry.get(this.pipesContainerPath);
@@ -287,12 +295,16 @@ export class FlappyLogic {
         }
 
         // Pipe updating and collision
+        let pipesToKeep = [];
+        let didRemovePipes = false;
+
         for (let i = this.pipes.length - 1; i >= 0; i--) {
             const pipe = this.pipes[i];
             pipe.x -= this.pipeSpeed * dt;
 
-            if (pipe.renderNode && pipe.renderNode.domElement) {
-                pipe.renderNode.domElement.style.left = `${pipe.x}px`;
+            const pipeNode = RenderNode.registry.get(`${pipesContainer.path}.${pipe.id}`);
+            if (pipeNode) {
+                pipeNode.aplicarParche({ Propiedades_Esteticas: { left: `${pipe.x}px` } });
             }
 
             // AABB Collision Check with slight padding (forgiveness)
@@ -327,16 +339,17 @@ export class FlappyLogic {
 
             // Cleanup off-screen pipes via V4 Unmount
             if (pipe.x + this.pipeWidth < 0) {
-                if (pipe.renderNode) {
-                    pipe.renderNode.unmount();
-                    // Remove from parent children array to fully release memory
-                    if (pipesContainer && pipesContainer.children) {
-                        const index = pipesContainer.children.indexOf(pipe.renderNode);
-                        if (index > -1) pipesContainer.children.splice(index, 1);
-                    }
-                }
+                didRemovePipes = true;
                 this.pipes.splice(i, 1);
+            } else {
+                pipesToKeep.push(pipe.id);
             }
+        }
+
+        // If pipes were removed from screen, patch the container to clean up memory
+        if (didRemovePipes && pipesContainer) {
+            const nuevosHijos = pipesContainer.hijosDatos.filter(hijo => pipesToKeep.includes(hijo.id));
+            pipesContainer.aplicarParche({ Hijos: nuevosHijos });
         }
     }
 }

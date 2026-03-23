@@ -276,6 +276,12 @@ export class RenderNode {
 
     // Aplicar Parche a Propiedades
     aplicarParche(parche) {
+        if (parche.innerHTML !== undefined) {
+            this.innerHTML = parche.innerHTML;
+            if (this.domElement) {
+                this.domElement.innerHTML = parche.innerHTML;
+            }
+        }
         if (parche.Propiedades_Esteticas) {
             for (const [key, value] of Object.entries(parche.Propiedades_Esteticas)) {
                 this.propiedadesEsteticas[key] = value;

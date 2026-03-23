@@ -24,8 +24,9 @@
             "Propiedades_Esteticas": {
                 "position": "absolute",
                 "top": "10%",
-                "left": "50%",
-                "transform": "translateX(-50%)",
+                "left": "0",
+                "width": "100%",
+                "textAlign": "center",
                 "fontSize": "48px",
                 "fontWeight": "bold",
                 "color": "white",
@@ -39,45 +40,65 @@
             "id": "pantalla_gameover",
             "Propiedades_Esteticas": {
                 "position": "absolute",
-                "top": "40%",
-                "left": "50%",
-                "transform": "translate(-50%, -50%)",
-                "width": "80%",
-                "background": "#ded895",
-                "border": "4px solid #543847",
-                "borderRadius": "10px",
-                "padding": "20px",
-                "textAlign": "center",
-                "zIndex": "20",
+                "top": "0",
+                "left": "0",
+                "width": "100%",
+                "height": "100%",
                 "display": "none",
-                "boxShadow": "0 5px 15px rgba(0,0,0,0.5)"
+                "flexDirection": "column",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "zIndex": "20"
             },
             "Hijos": [
                 {
-                    "id": "texto_gameover",
+                    "id": "caja_gameover",
                     "Propiedades_Esteticas": {
-                        "fontSize": "24px",
-                        "fontWeight": "bold",
-                        "color": "#e06336",
-                        "textShadow": "1px 1px 0 #fff",
-                        "marginBottom": "15px"
+                        "width": "80%",
+                        "background": "#ded895",
+                        "border": "4px solid #543847",
+                        "borderRadius": "10px",
+                        "padding": "20px",
+                        "textAlign": "center",
+                        "boxShadow": "0 5px 15px rgba(0,0,0,0.5)",
+                        "pointerEvents": "auto",
+                        "display": "flex",
+                        "flexDirection": "column",
+                        "alignItems": "center"
                     },
-                    "innerHTML": "Game Over"
-                },
-                {
-                    "id": "btn_reiniciar",
-                    "Propiedades_Esteticas": {
-                        "display": "inline-block",
-                        "background": "#f17922",
-                        "color": "white",
-                        "padding": "10px 20px",
-                        "fontSize": "18px",
-                        "fontWeight": "bold",
-                        "border": "2px solid white",
-                        "borderRadius": "5px",
-                        "cursor": "pointer"
-                    },
-                    "innerHTML": "Reintentar"
+                    "Hijos": [
+                        {
+                            "id": "texto_gameover",
+                            "Propiedades_Esteticas": {
+                                "fontSize": "24px",
+                                "fontWeight": "bold",
+                                "color": "#e06336",
+                                "textShadow": "1px 1px 0 #fff",
+                                "marginBottom": "15px",
+                                "position": "relative",
+                                "display": "block"
+                            },
+                            "innerHTML": "Game Over"
+                        },
+                        {
+                            "id": "btn_reiniciar",
+                            "Propiedades_Esteticas": {
+                                "display": "flex",
+                                "justifyContent": "center",
+                                "alignItems": "center",
+                                "background": "#f17922",
+                                "color": "white",
+                                "padding": "10px 20px",
+                                "fontSize": "18px",
+                                "fontWeight": "bold",
+                                "border": "2px solid white",
+                                "borderRadius": "5px",
+                                "cursor": "pointer",
+                                "position": "relative"
+                            },
+                            "innerHTML": "Reintentar"
+                        }
+                    ]
                 }
             ]
         },
