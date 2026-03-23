@@ -28,9 +28,6 @@ export class FlappyLogic {
     onMount() {
         console.log(`[App] Flappy Bird Montado en: ${this.node.path}`);
 
-        // Listen to clicks on the entire app container for jumping
-        this.node.domElement.addEventListener('click', () => this.jump());
-
         // Listen to restart button
         setTimeout(() => {
             const restartBtn = RenderNode.registry.get(this.restartBtnPath);
@@ -48,6 +45,11 @@ export class FlappyLogic {
 
     onUnmount() {
         EngineTicker.unsubscribe(this.updateCallback);
+    }
+
+    // Engine automatically binds this to the root node if it exists
+    onClick(e) {
+        this.jump();
     }
 
     jump() {
